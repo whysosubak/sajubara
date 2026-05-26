@@ -1,26 +1,259 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --sb-cream: #FAF3E0;
+  --sb-cream-dark: #F2E7CC;
+  --sb-bg: #FFF8E8;
+  --sb-paper: #FFFDF5;
+
+  --sb-olive: #5C6E3E;
+  --sb-olive-dark: #3F4D2A;
+  --sb-olive-light: #8A9A5B;
+
+  --sb-yuzu: #F4C95D;
+  --sb-yuzu-dark: #D89A2A;
+  --sb-yuzu-light: #FBE889;
+
+  --sb-terra: #B87A5B;
+  --sb-terra-dark: #8B5E3C;
+
+  --sb-ink: #2A1F14;
+  --sb-ink-2: #5B4A36;
+  --sb-ink-3: #8B7758;
+  --sb-hairline: rgba(91, 74, 54, 0.12);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-sb-cream: var(--sb-cream);
+  --color-sb-cream-dark: var(--sb-cream-dark);
+  --color-sb-bg: var(--sb-bg);
+  --color-sb-paper: var(--sb-paper);
+  --color-sb-olive: var(--sb-olive);
+  --color-sb-olive-dark: var(--sb-olive-dark);
+  --color-sb-olive-light: var(--sb-olive-light);
+  --color-sb-yuzu: var(--sb-yuzu);
+  --color-sb-yuzu-dark: var(--sb-yuzu-dark);
+  --color-sb-yuzu-light: var(--sb-yuzu-light);
+  --color-sb-terra: var(--sb-terra);
+  --color-sb-terra-dark: var(--sb-terra-dark);
+  --color-sb-ink: var(--sb-ink);
+  --color-sb-ink-2: var(--sb-ink-2);
+  --color-sb-ink-3: var(--sb-ink-3);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --radius-sb-sm: 10px;
+  --radius-sb-md: 16px;
+  --radius-sb-lg: 22px;
+  --radius-sb-xl: 28px;
+
+  --shadow-sb-card: 0 2px 8px rgba(91, 74, 54, 0.08);
+  --shadow-sb-hero: 0 6px 18px rgba(120, 90, 50, 0.18);
+  --shadow-sb-pop: 0 4px 12px rgba(63, 77, 42, 0.22);
+
+  --font-display: "Gowun Dodum", "Noto Sans KR", -apple-system, system-ui, sans-serif;
+  --font-body: "Noto Sans KR", -apple-system, system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #EAE3D0;
+  color: var(--sb-ink);
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Codex in-app browser comment overlay can remain after UI annotations and block app clicks. */
+#codex-browser-sidebar-comments-root {
+  pointer-events: none !important;
+}
+
+.sb-app-shell {
+  background: linear-gradient(180deg, var(--sb-bg) 0%, #F7EDD2 100%);
+  box-shadow: 0 0 0 1px rgba(91, 74, 54, 0.1), 0 12px 40px rgba(60, 40, 20, 0.12);
+}
+
+.sb-tab-shell {
+  --sb-tabbar-clearance: calc(112px + env(safe-area-inset-bottom));
+}
+
+.sb-tab-shell > .flex-1.overflow-y-auto {
+  scroll-padding-bottom: var(--sb-tabbar-clearance);
+}
+
+.sb-tab-shell > .flex-1.overflow-y-auto::after {
+  content: "";
+  display: block;
+  flex: 0 0 auto;
+  height: var(--sb-tabbar-clearance);
+  pointer-events: none;
+}
+
+/* 파스텔 테마 (타로바라 전용) — 라이트 퍼플 + 페일 핑크 */
+.sb-theme-pastel {
+  --sb-bg: #FBF5FF;
+  --sb-paper: #FFFFFF;
+  --sb-olive: #C7B8FF;
+  --sb-olive-dark: #6E5BC4;
+  --sb-olive-light: #B5A4F0;
+  --sb-yuzu: #FFC9D6;
+  --sb-yuzu-dark: #E08AA0;
+  --sb-yuzu-light: #FFE0E8;
+  --sb-terra: #C7B8FF;
+  --sb-terra-dark: #6E5BC4;
+  --sb-ink: #2E2A3A;
+  --sb-ink-2: #5A5468;
+  --sb-ink-3: #8A8398;
+  --sb-hairline: rgba(110, 91, 196, 0.16);
+}
+.sb-theme-pastel.sb-app-shell {
+  background: linear-gradient(180deg, #FBF5FF 0%, #F2E8FF 100%);
+}
+
+@media (max-width: 420px) {
+  .sb-app-shell {
+    box-shadow: none;
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes sbShimmer {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.sb-skeleton-shimmer {
+  animation: sbShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes sbLoaderBob {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-5px) rotate(1deg); }
+}
+
+@keyframes sbLoaderWave {
+  0%, 100% { transform: translateX(-3px); opacity: 0.78; }
+  50% { transform: translateX(3px); opacity: 1; }
+}
+
+@keyframes sbLoaderWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(4deg); }
+}
+
+.sb-loader-bob {
+  animation: sbLoaderBob 2.2s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.sb-loader-wave {
+  animation: sbLoaderWave 1.8s ease-in-out infinite;
+}
+
+.sb-loader-pencil,
+.sb-loader-leaf,
+.sb-loader-orb,
+.sb-loader-yuzu {
+  animation: sbLoaderWiggle 2.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+.sb-chevron {
+  transition: transform 0.22s ease;
+}
+details[open] > summary .sb-chevron {
+  transform: rotate(180deg);
+}
+.sb-accordion-body {
+  animation: sbAccordionIn 0.22s ease-out;
+}
+@keyframes sbAccordionIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sb-app-shell {
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    box-shadow: none !important;
+    background: #fff !important;
+  }
+
+  .h-dvh,
+  .min-h-dvh {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .sb-report-printing .sb-app-shell {
+    display: block !important;
+  }
+
+  .sb-report-printing .sb-app-shell > .flex-1,
+  .sb-report-printing .flex-1 {
+    flex: none !important;
+    min-height: 0 !important;
+  }
+
+  .sb-app-shell > header,
+  .sb-app-shell > nav,
+  .fixed,
+  .sb-print-hidden,
+  .sb-no-print {
+    display: none !important;
+  }
+
+  .sb-tab-shell > .flex-1.overflow-y-auto::after {
+    display: none !important;
+  }
+
+  .overflow-y-auto,
+  .overflow-hidden {
+    overflow: visible !important;
+  }
+
+  main {
+    padding-bottom: 0 !important;
+  }
+
+  section,
+  article,
+  details {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  p {
+    orphans: 3;
+    widows: 3;
+  }
 }
