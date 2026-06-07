@@ -4,6 +4,7 @@ import MenuCardLink from "@/app/components/MenuCardLink";
 import type { TranslationKey } from "@/app/i18n";
 import { todayLunarLabel } from "@/lib/saju/today";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 const BARA_FACE_SRC = "/images/brand/capybara-glass-face.png";
 type LocalizedLabels = { ko: string; en: string };
@@ -167,6 +168,14 @@ type MenuItem = {
   subtitleKey: TranslationKey;
   descriptionKey: TranslationKey;
   image: string;
+  imageEn?: string;
+  bannerCopyEn?: {
+    eyebrow: string;
+    title: [string, string];
+    caption: string;
+  };
+  bannerTextColor?: string;
+  bannerBorderColor?: string;
   badgeKey?: TranslationKey;
   fallbackFrom: string;
   fallbackTo: string;
@@ -183,6 +192,14 @@ const MENU: MenuItem[] = [
     subtitleKey: "home.menu.saju.subtitle",
     descriptionKey: "home.menu.saju.description",
     image: "/images/banners/saju.png",
+    imageEn: "/images/banners/saju-en.png",
+    bannerCopyEn: {
+      eyebrow: "CORE REPORT",
+      title: ["Bara", "Saju"],
+      caption: "Inner Flow",
+    },
+    bannerTextColor: "#AF655E",
+    bannerBorderColor: "rgba(175,101,94,0.5)",
     fallbackFrom: "#FCE7E3",
     fallbackTo: "#F5C8C0",
     priceLabelKey: "common.partlyFree",
@@ -195,6 +212,14 @@ const MENU: MenuItem[] = [
     subtitleKey: "home.menu.color.subtitle",
     descriptionKey: "home.menu.color.description",
     image: "/images/banners/color.png",
+    imageEn: "/images/banners/color-en.png",
+    bannerCopyEn: {
+      eyebrow: "COLOR REPORT",
+      title: ["Color", "Bara"],
+      caption: "Birthday Color",
+    },
+    bannerTextColor: "#5D875D",
+    bannerBorderColor: "rgba(93,135,93,0.48)",
     badgeKey: "common.free",
     fallbackFrom: "#EDEAC8",
     fallbackTo: "#C9DFE5",
@@ -208,6 +233,14 @@ const MENU: MenuItem[] = [
     subtitleKey: "home.menu.daewoon.subtitle",
     descriptionKey: "home.menu.daewoon.description",
     image: "/images/banners/daewoon-blue.png",
+    imageEn: "/images/banners/daewoon-blue-en.png",
+    bannerCopyEn: {
+      eyebrow: "MAJOR FLOW",
+      title: ["10-Year", "Cycle"],
+      caption: "Timing Guide",
+    },
+    bannerTextColor: "#5F7FC3",
+    bannerBorderColor: "rgba(95,127,195,0.48)",
     fallbackFrom: "#D9E9F7",
     fallbackTo: "#7EA8CF",
     priceLabelKey: "common.partlyFree",
@@ -221,6 +254,14 @@ const MENU: MenuItem[] = [
     subtitleKey: "home.menu.yearly.subtitle",
     descriptionKey: "home.menu.yearly.description",
     image: "/images/banners/yearly.png",
+    imageEn: "/images/banners/yearly-en.png",
+    bannerCopyEn: {
+      eyebrow: "YEARLY GUIDE",
+      title: ["Yearly", "Fortune"],
+      caption: "Monthly Flow",
+    },
+    bannerTextColor: "#AE7A2C",
+    bannerBorderColor: "rgba(174,122,44,0.48)",
     fallbackFrom: "#F5E5B6",
     fallbackTo: "#E8CB7B",
     priceLabelKey: "common.partlyFree",
@@ -232,6 +273,23 @@ const MENU: MenuItem[] = [
 function MenuGrid() {
   return (
     <section className="px-4 pt-2 pb-4">
+      <style>{`
+        .sb-menu-banner-image {
+          --sb-banner-current: var(--sb-banner-ko);
+        }
+
+        html[lang="en"] .sb-menu-banner-image {
+          --sb-banner-current: var(--sb-banner-en);
+        }
+
+        .sb-banner-copy {
+          display: none;
+        }
+
+        html[lang="en"] .sb-banner-copy {
+          display: flex;
+        }
+      `}</style>
       <div className="text-[10.5px] font-extrabold text-sb-ink-3 tracking-[0.18em] uppercase mb-1">
         <T k="home.menu.eyebrow" />
       </div>
@@ -248,6 +306,17 @@ function MenuGrid() {
 }
 
 function MenuCard({ item }: { item: MenuItem }) {
+  const bannerStyle = {
+    "--sb-banner-ko": `url(${item.image})`,
+    "--sb-banner-en": `url(${item.imageEn ?? item.image})`,
+    "--sb-banner-text": item.bannerTextColor ?? "var(--sb-ink)",
+    "--sb-banner-border": item.bannerBorderColor ?? "rgba(91,74,54,0.3)",
+    backgroundImage: `linear-gradient(180deg, rgba(42,31,20,0) 45%, rgba(42,31,20,0.45) 100%), var(--sb-banner-current), linear-gradient(160deg, ${item.fallbackFrom} 0%, ${item.fallbackTo} 100%)`,
+    backgroundSize: "cover, cover, cover",
+    backgroundPosition: "center, center",
+    backgroundRepeat: "no-repeat, no-repeat, no-repeat",
+  } as CSSProperties;
+
   return (
     <MenuCardLink
       baseHref={item.href}
@@ -257,17 +326,36 @@ function MenuCard({ item }: { item: MenuItem }) {
       style={{ boxShadow: "var(--shadow-sb-card), inset 0 0 0 1px rgba(91,74,54,0.08)" }}
     >
       <div
-        className="relative w-full aspect-[5/4] overflow-hidden"
-        style={{
-          backgroundImage: item.image
-            ? `linear-gradient(180deg, rgba(42,31,20,0) 45%, rgba(42,31,20,0.45) 100%), url(${item.image}), linear-gradient(160deg, ${item.fallbackFrom} 0%, ${item.fallbackTo} 100%)`
-            : `radial-gradient(circle at 28% 30%, rgba(143,191,122,0.78) 0 18%, transparent 19%), radial-gradient(circle at 68% 34%, rgba(229,200,77,0.74) 0 17%, transparent 18%), radial-gradient(circle at 54% 72%, rgba(109,145,198,0.72) 0 21%, transparent 22%), linear-gradient(160deg, ${item.fallbackFrom} 0%, ${item.fallbackTo} 100%)`,
-          backgroundSize: item.image ? "cover, cover, cover" : "cover",
-          backgroundPosition: "center, center",
-          backgroundRepeat: "no-repeat, no-repeat, no-repeat",
-        }}
+        className="sb-menu-banner-image relative w-full aspect-[5/4] overflow-hidden"
+        style={bannerStyle}
         aria-hidden
       >
+        {item.bannerCopyEn && (
+          <div className="sb-banner-copy absolute left-[10.5%] top-[8%] h-[80%] w-[46%] items-center justify-center">
+            <div
+              className="relative flex h-full w-full flex-col items-center justify-between rounded-[10px] px-2.5 py-4 text-center"
+              style={{
+                background: "rgba(255, 249, 229, 0.9)",
+                border: "1px solid var(--sb-banner-border)",
+                boxShadow:
+                  "inset 0 0 0 1px rgba(255,255,255,0.58), 0 10px 22px rgba(91,74,54,0.08)",
+                color: "var(--sb-banner-text)",
+              }}
+            >
+              <span className="text-[7px] font-extrabold leading-tight">
+                {item.bannerCopyEn.eyebrow}
+              </span>
+              <span className="flex flex-col items-center text-[20px] font-black leading-[0.92]">
+                <span>{item.bannerCopyEn.title[0]}</span>
+                <span>{item.bannerCopyEn.title[1]}</span>
+              </span>
+              <span className="text-[8px] font-bold leading-tight opacity-75">
+                {item.bannerCopyEn.caption}
+              </span>
+            </div>
+          </div>
+        )}
+
         {item.badgeKey && (
           <span
             className="absolute top-2 right-2 inline-flex items-center px-2 py-[3px] rounded-full text-[10px] font-extrabold text-sb-ink"
