@@ -223,7 +223,7 @@ function DrawerSection({
   children: ReactNode;
 }) {
   return (
-    <section className="mt-1 first:mt-0">
+    <section className="mt-6 first:mt-0">
       <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-sb-ink-3">
         {title}
       </p>
