@@ -169,7 +169,7 @@ async function PreviewBody({
           </span>
         </div>
         <h2 className="text-[17px] font-extrabold text-white tracking-tight leading-snug">
-          {input.name}님의 사주바라 전체 해설
+          {input.name}님의 바라사주 전체 해설
         </h2>
         <ul className="mt-3 flex flex-wrap gap-1.5">
           {["타고난 성격", "직업·재능", "재물운", "애정·관계", "올해 흐름"].map((label) => (
@@ -376,7 +376,7 @@ function buildMockCheckoutHref(input: SajuInput): string {
     amount: 990,
     product: sajuPersonProduct(input),
     returnTo: buildResultHref(input, true),
-    title: `${input.name}님 사주바라 전체 해설`,
+    title: `${input.name}님 바라사주 전체 해설`,
   });
 }
 

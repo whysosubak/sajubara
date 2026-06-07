@@ -12,7 +12,7 @@ import {
   ELEMENT_LABEL_KR,
 } from "@/lib/bara/types";
 
-const STORAGE_KEY = "sajubara:lastSajuCardId";
+const STORAGE_KEY = "barasaju:lastSajuCardId";
 
 export default function MyBaraCard() {
   const { locale, t } = useI18n();

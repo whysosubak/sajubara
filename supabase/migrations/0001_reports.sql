@@ -1,4 +1,4 @@
--- sajubara LLM report cache
+-- barasaju LLM report cache
 -- Stores all generated reports keyed by a hash of (scope, birth identity, context).
 -- No PII (no name) in cache_key — name is treated as a render-time variable.
 

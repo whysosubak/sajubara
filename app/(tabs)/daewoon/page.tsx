@@ -126,7 +126,7 @@ async function DaewoonBody({
         <SewunTimeline chart={chart} focused={focused} isCurrentFocus={isFocusingCurrent} />
         <ReportUtilityActions
           title={`${input.name}님의 ${focused.startAge}~${focused.endAge}세 대운 해설`}
-          description="사주바라에서 본 대운 해설이에요."
+          description="바라사주에서 본 대운 해설이에요."
         />
         <ContentDisclaimer compact />
         <div id="daewoon-report" style={{ scrollMarginTop: 12 }} />
@@ -229,7 +229,7 @@ async function ReportBlock({
 
 function CrossSell() {
   const items = [
-    { href: "/saju", title: "사주바라", subtitle: "내 안의 에너지", image: "/images/banners/saju.png", fallback: "linear-gradient(160deg, #FCE7E3 0%, #F5C8C0 100%)" },
+    { href: "/saju", title: "바라사주", subtitle: "내 안의 에너지", image: "/images/banners/saju.png", fallback: "linear-gradient(160deg, #FCE7E3 0%, #F5C8C0 100%)" },
     { href: "/yearly", title: "연도별 운세", subtitle: "한 해의 흐름", image: "/images/banners/yearly.png", fallback: "linear-gradient(160deg, #F5E5B6 0%, #E8CB7B 100%)" },
     { href: "/color", title: "컬러바라", subtitle: "생일 컬러", image: "/images/banners/color.png", fallback: "radial-gradient(circle at 28% 30%, rgba(143,191,122,0.78) 0 18%, transparent 19%), radial-gradient(circle at 68% 34%, rgba(229,200,77,0.74) 0 17%, transparent 18%), linear-gradient(160deg, #EDEAC8 0%, #C9DFE5 100%)" },
   ];

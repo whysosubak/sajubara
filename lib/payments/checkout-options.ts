@@ -60,7 +60,7 @@ export function buildCheckoutOptions({
         {
           id: "single",
           title,
-          subtitle: "사주바라 유료 해설에 사용할 유자를 충전해요",
+          subtitle: "바라사주 유료 해설에 사용할 유자를 충전해요",
           baseAmount: amount,
           features: ["충전소 잔액 반영", "실결제 승인", "보관함과 리포트에서 사용"],
         },
@@ -84,17 +84,17 @@ export function buildCheckoutOptions({
     {
       id: "today-pack",
       title: "오늘의 바라팩",
-      subtitle: "사주바라 + 현재 대운 + 올해 운세",
+      subtitle: "바라사주 + 현재 대운 + 올해 운세",
       baseAmount: 2900,
       badge: "추천",
-      features: ["사주바라 전체 해설", "현재 10년 대운 상세", "올해 연도별 운세 상세", "보관함 저장"],
+      features: ["바라사주 전체 해설", "현재 10년 대운 상세", "올해 연도별 운세 상세", "보관함 저장"],
     },
     {
       id: "life-pack",
       title: "내 인생 흐름팩",
       subtitle: "큰 흐름을 한 번에 보는 전체팩",
       baseAmount: 9900,
-      features: ["사주바라 전체", "현재 대운 + 미래 3주기", "올해 + 미래 3년 운세", "PDF/공유 링크"],
+      features: ["바라사주 전체", "현재 대운 + 미래 3주기", "올해 + 미래 3년 운세", "PDF/공유 링크"],
     },
   ];
 
@@ -162,7 +162,7 @@ function unlockUnitsForOption(
   if (plan === "life-pack") {
     return personKey
       ? [
-          { key: `saju:${personKey}`, label: "사주바라", scope: { product: "saju", personKey } },
+          { key: `saju:${personKey}`, label: "바라사주", scope: { product: "saju", personKey } },
           {
             key: `daewoon:${personKey}:all`,
             label: "전체 대운",
@@ -175,7 +175,7 @@ function unlockUnitsForOption(
           },
         ]
       : [
-          { key: "saju", label: "사주바라", scope: { product: "saju" } },
+          { key: "saju", label: "바라사주", scope: { product: "saju" } },
           { key: "daewoon:all", label: "전체 대운", scopeKey: "daewoon:all" },
           { key: "yearly:all", label: "전체 연도별 운세", scopeKey: "yearly:all" },
         ];
@@ -183,7 +183,7 @@ function unlockUnitsForOption(
 
   const baseUnits: UnlockUnit[] = personKey
     ? [
-        { key: `saju:${personKey}`, label: "사주바라", scope: { product: "saju", personKey } },
+        { key: `saju:${personKey}`, label: "바라사주", scope: { product: "saju", personKey } },
         {
           key: `daewoon:${personKey}:current`,
           label: "현재 대운",
@@ -196,7 +196,7 @@ function unlockUnitsForOption(
         },
       ]
     : [
-        { key: "saju", label: "사주바라", scope: { product: "saju" } },
+        { key: "saju", label: "바라사주", scope: { product: "saju" } },
         { key: "daewoon:current", label: "현재 대운", scope: { product: "daewoon", period: "current" } },
         { key: `yearly:${nowYear}`, label: `${nowYear}년 운세`, scope: { product: "yearly", year: nowYear } },
       ];
@@ -224,7 +224,7 @@ function singleUnlockUnit(
   if (kind === "saju") {
     return {
       key: personKey ? `saju:${personKey}` : "saju",
-      label: "사주바라",
+      label: "바라사주",
       scope: personKey ? { product: "saju", personKey } : { product: "saju" },
     };
   }
@@ -286,7 +286,7 @@ function parseNumber(value: string | undefined): number | undefined {
 
 function yearFromReturnTo(returnTo: string): number | undefined {
   try {
-    const url = new URL(returnTo, "http://sajubara.local");
+    const url = new URL(returnTo, "http://barasaju.local");
     return parseNumber(url.pathname.match(/^\/yearly\/(\d{4})$/)?.[1]);
   } catch {
     return undefined;
@@ -295,7 +295,7 @@ function yearFromReturnTo(returnTo: string): number | undefined {
 
 function daewoonIndexFromReturnTo(returnTo: string): string | undefined {
   try {
-    const url = new URL(returnTo, "http://sajubara.local");
+    const url = new URL(returnTo, "http://barasaju.local");
     return url.searchParams.get("index") ?? undefined;
   } catch {
     return undefined;

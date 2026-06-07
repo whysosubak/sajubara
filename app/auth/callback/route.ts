@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-const NEXT_COOKIE = "sajubara_auth_next";
+const NEXT_COOKIE = "barasaju_auth_next";
 
 function normalizeNextPath(value: string | null | undefined) {
   if (!value || !value.startsWith("/") || value.startsWith("//")) return "/people";

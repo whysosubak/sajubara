@@ -95,7 +95,7 @@ export default function PeoplePage() {
     const list = loadPeople();
     setPeople(list);
     if (typeof window !== "undefined") {
-      const sel = localStorage.getItem("sajubara:selectedId");
+      const sel = localStorage.getItem("barasaju:selectedId");
       setSelected(sel ?? list[0]?.id ?? null);
     }
   }
@@ -106,8 +106,8 @@ export default function PeoplePage() {
     // Also sync legacy keys (so result/home pages pick it up)
     const target = people.find((p) => p.id === id);
     if (target && typeof window !== "undefined") {
-      localStorage.setItem("sajubara:lastSajuCardId", target.cardId);
-      localStorage.setItem("sajubara:lastSajuInput", JSON.stringify(target.input));
+      localStorage.setItem("barasaju:lastSajuCardId", target.cardId);
+      localStorage.setItem("barasaju:lastSajuInput", JSON.stringify(target.input));
     }
   }
 
@@ -120,10 +120,10 @@ export default function PeoplePage() {
   function handleDeleteAll() {
     if (!confirm(t("people.deleteAllConfirm"))) return;
     if (typeof window !== "undefined") {
-      localStorage.removeItem("sajubara:people");
-      localStorage.removeItem("sajubara:selectedId");
-      localStorage.removeItem("sajubara:lastSajuCardId");
-      localStorage.removeItem("sajubara:lastSajuInput");
+      localStorage.removeItem("barasaju:people");
+      localStorage.removeItem("barasaju:selectedId");
+      localStorage.removeItem("barasaju:lastSajuCardId");
+      localStorage.removeItem("barasaju:lastSajuInput");
     }
     refresh();
   }

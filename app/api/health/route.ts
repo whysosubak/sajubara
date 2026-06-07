@@ -32,7 +32,7 @@ export function GET() {
   return NextResponse.json(
     {
       ok,
-      service: "sajubara",
+      service: "barasaju",
       checks,
       checkedAt: new Date().toISOString(),
     },

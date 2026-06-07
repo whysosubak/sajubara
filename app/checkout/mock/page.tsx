@@ -32,7 +32,7 @@ export default async function MockCheckoutPage({
       initialEntitlements={initialEntitlements}
       product={sp.product ?? "saju"}
       returnTo={returnTo}
-      title={sp.title ?? "사주바라 전체 해설"}
+      title={sp.title ?? "바라사주 전체 해설"}
     />
   );
 }

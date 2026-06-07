@@ -16,8 +16,8 @@ export type ColorBaraRecord = {
   updatedAt: number;
 };
 
-export const LS_COLOR_RECORDS = "sajubara:colorRecords";
-export const LS_SELECTED_COLOR_RECORD = "sajubara:selectedColorRecordId";
+export const LS_COLOR_RECORDS = "barasaju:colorRecords";
+export const LS_SELECTED_COLOR_RECORD = "barasaju:selectedColorRecordId";
 
 const MAX_RECORDS = 12;
 

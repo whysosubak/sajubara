@@ -35,14 +35,14 @@ export type Person = {
   createdAt: number;
 };
 
-export const LS_PEOPLE = "sajubara:people";
-export const LS_SELECTED = "sajubara:selectedId";
-export const LS_PRIMARY_CHANGED_AT = "sajubara:primaryChangedAt";
+export const LS_PEOPLE = "barasaju:people";
+export const LS_SELECTED = "barasaju:selectedId";
+export const LS_PRIMARY_CHANGED_AT = "barasaju:primaryChangedAt";
 export const PRIMARY_CHANGE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
 
 // Legacy keys (호환 유지)
-export const LS_LEGACY_CARD = "sajubara:lastSajuCardId";
-export const LS_LEGACY_INPUT = "sajubara:lastSajuInput";
+export const LS_LEGACY_CARD = "barasaju:lastSajuCardId";
+export const LS_LEGACY_INPUT = "barasaju:lastSajuInput";
 
 function safeJSON<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;

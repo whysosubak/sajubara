@@ -16,7 +16,7 @@ const LOADER_IMAGES: Record<
 > = {
   saju: {
     src: "/images/loaders/saju-cutout.png",
-    label: "사주바라 리포트를 정리하는 카피바라",
+    label: "바라사주 리포트를 정리하는 카피바라",
   },
   daewoon: {
     src: "/images/loaders/daewoon-cutout.png",

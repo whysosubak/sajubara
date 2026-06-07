@@ -57,7 +57,7 @@ export default async function PortOneCompletePage({
       plan={sp.plan ?? "single"}
       product={sp.product ?? ""}
       returnTo={returnTo}
-      title={sp.title ?? "사주바라 해설"}
+      title={sp.title ?? "바라사주 해설"}
     />
   );
 }

@@ -8,7 +8,7 @@ import { useI18n } from "@/app/components/LanguageProvider";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const BARA_FACE_SRC = "/images/brand/capybara-glass-face.png";
-const NEXT_COOKIE = "sajubara_auth_next";
+const NEXT_COOKIE = "barasaju_auth_next";
 const NEXT_COOKIE_MAX_AGE_SECONDS = 10 * 60;
 const AUTH_REQUEST_TIMEOUT_MS = 12_000;
 const AUTH_REDIRECT_TIMEOUT_MS = 8_000;

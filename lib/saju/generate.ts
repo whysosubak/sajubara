@@ -11,7 +11,7 @@ import { getReport, saveReport, type ReportKind } from "@/lib/db/reports";
 import { pickFortuneSubtitle, pickMonthSubtitle } from "./subtitle-pool";
 import { computeKeySignals } from "./signals";
 
-const CACHE_DIR = join(tmpdir(), "sajubara-cache");
+const CACHE_DIR = join(tmpdir(), "barasaju-cache");
 let cacheDirReady: Promise<void> | null = null;
 async function ensureCacheDir(): Promise<void> {
   if (!cacheDirReady) {
@@ -165,7 +165,7 @@ const BARA_VOICE = `너는 한국어 카피라이터다. 사주를 통해 사람
 [방위/색 처방 일관성]
 - 결과지 안에서 방위 처방은 하나의 기준으로 통일한다.
 - [결과지 전체 개운 처방 기준]에 추천 방위가 있으면, 동서남북·남동/북서 같은 방위 표현은 그 방위만 쓴다.
-- 단, 사주바라 9개 카드에서는 방위·색·공간 배치 처방을 남발하지 않는다.
+- 단, 바라사주 9개 카드에서는 방위·색·공간 배치 처방을 남발하지 않는다.
 - 방위·색 처방은 기본적으로 "바라의 한 마디" 같은 종합 조언 카드에서만 1회 사용한다.
 - 성격·직업·재물·관계·그림자 카드마다 같은 방위/색/공간 처방을 붙이면 실패다.
 - 섹션마다 서로 다른 방위를 추천하지 마. 방위가 꼭 필요하지 않으면 시기·금액·관계 유형·역할 설계·대화 방식처럼 카드 주제에 맞는 처방으로 구체화한다.
@@ -258,7 +258,7 @@ function inputBlock(input: SajuInput, chart: SajuChart): string {
 - 추천 계절감: ${remedy.season}
 - 방위를 언급해야 한다면 반드시 "${remedy.direction}"만 쓴다.
 - 다른 방위(동쪽/서쪽/남쪽/북쪽/남동쪽/북서쪽 등)를 섞지 않는다.
-- 사주바라 기본 카드에서는 이 처방을 매 섹션마다 쓰지 않는다.
+- 바라사주 기본 카드에서는 이 처방을 매 섹션마다 쓰지 않는다.
 - 특히 성격·직업·애정·그림자·피해야 할 사람 카드에는 방위/색/공간 배치를 넣지 않는다.
 - 방위/색 처방은 "바라의 한 마디"처럼 종합 조언 카드에서만 자연스럽게 1회 쓰는 것을 원칙으로 한다.
 

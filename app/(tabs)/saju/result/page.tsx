@@ -130,10 +130,10 @@ async function ResultBody({ input, isPaid }: { input: SajuInput; isPaid: boolean
             }
           />
           <ReportUtilityActions
-            title={`${input.name}님의 사주바라 결과`}
-            description="사주바라에서 본 사주 결과예요."
+            title={`${input.name}님의 바라사주 결과`}
+            description="바라사주에서 본 사주 결과예요."
             cardImageHref={baraCard.image}
-            cardDownloadName={`${input.name}-sajubara-card.png`}
+            cardDownloadName={`${input.name}-barasaju-card.png`}
           />
         </>
       )}
@@ -147,11 +147,11 @@ async function ResultBody({ input, isPaid }: { input: SajuInput; isPaid: boolean
             <ReportGenerationLoading
               visual="saju"
               eyebrow={isPaid ? "PAID SAJU REPORT GENERATING" : "FREE REPORT GENERATING"}
-              title={`${input.name}님의 사주바라 리포트를 해석하는 중이에요`}
+              title={`${input.name}님의 바라사주 리포트를 해석하는 중이에요`}
               description="사주 4기둥과 카드 흐름을 맞춰보고, 성격·재물·관계·그림자 해설을 정리하고 있어요."
               steps={[
                 "일간과 사주 4기둥 관계 확인",
-                "사주바라 카드와 9개 섹션 정리",
+                "바라사주 카드와 9개 섹션 정리",
                 isPaid ? "구매한 상세 본문 생성" : "무료 해설 문장 준비",
               ]}
             />
@@ -225,7 +225,7 @@ function buildMockCheckoutHref(input: SajuInput): string {
     amount: 990,
     product: sajuPersonProduct(input),
     returnTo: buildSajuResultHref(input, true),
-    title: "사주바라 전체 해설",
+    title: "바라사주 전체 해설",
   });
 }
 
@@ -240,7 +240,7 @@ async function OneLinerInline({
   try {
     text = await generateOneLiner(input, chart);
   } catch (error) {
-    console.error("[sajubara] one-liner generation failed", {
+    console.error("[barasaju] one-liner generation failed", {
       name: input.name,
       error,
     });
@@ -377,7 +377,7 @@ async function SectionCard({
   try {
     result = await generateSection(input, chart, section, !bodyAvailable);
   } catch (error) {
-    console.error("[sajubara] section generation failed", {
+    console.error("[barasaju] section generation failed", {
       section: section.key,
       name: input.name,
       error,

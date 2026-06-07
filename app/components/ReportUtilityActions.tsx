@@ -46,7 +46,7 @@ export default function ReportUtilityActions({
 
   async function handleShare() {
     const url = window.location.href;
-    const shareText = description ?? "사주바라 결과를 확인해보세요.";
+    const shareText = description ?? "바라사주 결과를 확인해보세요.";
     try {
       if (navigator.share) {
         await navigator.share({ title, text: shareText, url });
@@ -165,9 +165,9 @@ function sanitizeFileName(value: string): string {
 function buildReportPdfTitle(title: string): string {
   const cleaned = title.replace(/[\\/:*?"<>|]+/g, "-").replace(/\s+/g, " ").trim();
   const match = cleaned.match(/^(.+?)님의\s*(.+)$/);
-  if (!match) return sanitizeFileName(`사주바라 - ${cleaned}`);
+  if (!match) return sanitizeFileName(`바라사주 - ${cleaned}`);
   const [, name, reportTitle] = match;
-  return sanitizeFileName(`사주바라 - ${name.trim()} - ${reportTitle.trim()}`);
+  return sanitizeFileName(`바라사주 - ${name.trim()} - ${reportTitle.trim()}`);
 }
 
 function prepareReportPrint(pdfTitle: string): () => void {

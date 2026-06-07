@@ -99,10 +99,10 @@ const TODAY_UI = {
     paidCta: "열어둔 이 날 운세 자세히 보기",
     lockedCta: "990원으로 이 날 운세 보기",
     deeperEyebrow: "더 깊게 보고 싶다면",
-    fullReportTitle: "{name}님의 사주바라 전체 해설",
+    fullReportTitle: "{name}님의 바라사주 전체 해설",
     fullReportBody: "성격·재물·관계·그림자 카드까지 한 번에 정리해요.",
-    fullReportCta: "사주바라 전체 해설 열기",
-    fullReportCheckout: "사주바라 전체 해설",
+    fullReportCta: "바라사주 전체 해설 열기",
+    fullReportCheckout: "바라사주 전체 해설",
     todayFree: "오늘 무료",
     todayScore: "오늘의 점수",
     todayFlow: "오늘의 세부 흐름",
@@ -143,10 +143,10 @@ const TODAY_UI = {
     paidCta: "Open this unlocked day",
     lockedCta: "Read this day for 990 won",
     deeperEyebrow: "For a deeper reading",
-    fullReportTitle: "{name}’s full Sajubara reading",
+    fullReportTitle: "{name}’s full BaraSaju reading",
     fullReportBody: "Personality, money, relationships, and shadow cards in one report.",
-    fullReportCta: "Open full Sajubara reading",
-    fullReportCheckout: "Full Sajubara reading",
+    fullReportCta: "Open full BaraSaju reading",
+    fullReportCheckout: "Full BaraSaju reading",
     todayFree: "Free today",
     todayScore: "Today’s score",
     todayFlow: "Today’s detailed flow",
@@ -235,8 +235,8 @@ export default function TodayFortuneClient({
     setSelectedId(person.id);
     setSelected(person.id);
     try {
-      localStorage.setItem("sajubara:lastSajuCardId", person.cardId);
-      localStorage.setItem("sajubara:lastSajuInput", JSON.stringify(person.input));
+      localStorage.setItem("barasaju:lastSajuCardId", person.cardId);
+      localStorage.setItem("barasaju:lastSajuInput", JSON.stringify(person.input));
     } catch {
       // best-effort
     }

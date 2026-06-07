@@ -3,8 +3,8 @@ export const LOCALES = ["ko", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = "ko";
-export const LOCALE_STORAGE_KEY = "sajubara_locale";
-export const LOCALE_COOKIE = "sajubara_locale";
+export const LOCALE_STORAGE_KEY = "barasaju_locale";
+export const LOCALE_COOKIE = "barasaju_locale";
 
 const ko = {
   "common.back": "뒤로",
@@ -28,14 +28,14 @@ const ko = {
   "tab.charge": "충전소",
   "tab.archive": "보관함",
   "tab.today": "오늘의 운세",
-  "home.brand": "사주바라",
+  "home.brand": "바라사주",
   "home.tagline": "따뜻하지만 정확한 운세 리포트",
   "home.hero.badge": "오늘 무료",
   "home.hero.title": "오늘의 사주를\n열어볼까요?",
   "home.hero.description": "오늘 하루의 점수와 조심할 순간을 먼저 확인해보세요.",
   "home.menu.eyebrow": "Fortune Reports",
   "home.menu.title": "지금 필요한 흐름을 골라보세요",
-  "home.menu.saju.title": "사주바라",
+  "home.menu.saju.title": "바라사주",
   "home.menu.saju.subtitle": "기본 리포트",
   "home.menu.saju.description": "타고난 성향과 관계의 결",
   "home.menu.color.title": "컬러바라",
@@ -47,7 +47,7 @@ const ko = {
   "home.menu.yearly.title": "연도별운세",
   "home.menu.yearly.subtitle": "한 해 흐름",
   "home.menu.yearly.description": "월별 흐름과 조심할 때",
-  "home.footer.brand": "사주바라 · 온천처럼 따뜻한 운세 리포트",
+  "home.footer.brand": "바라사주 · 온천처럼 따뜻한 운세 리포트",
   "home.footer.disclaimer":
     "사주·운세·컬러수비학 결과는 참고용 콘텐츠이며, 전문적인 의학·법률·재무·투자 판단을 대체하지 않습니다.",
   "auth.signedOut": "로그인",
@@ -56,7 +56,7 @@ const ko = {
   "auth.supabaseUnavailable":
     "Supabase 로그인 서버에 연결할 수 없어요. Project URL과 anon key를 확인한 뒤 dev 서버를 재시작해 주세요.",
   "login.title": "로그인",
-  "login.welcome": "사주바라에 오신 걸 환영해요",
+  "login.welcome": "바라사주에 오신 걸 환영해요",
   "login.description": "가족·친구·연인 사주를 함께 등록하려면\n로그인이 필요해요.",
   "login.envMissing":
     "⚠️ Supabase 환경변수가 아직 설정 안 됐어요. 콘솔에서 NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY 등록 후 dev 서버를 재시작해 주세요.",
@@ -222,13 +222,13 @@ const ko = {
   "my.signOut": "로그아웃",
   "my.managePeople": "사주 관리",
   "my.savedPeople": "저장된 사람",
-  "my.sajuCardTitle": "{name}님의 사주바라 카드",
+  "my.sajuCardTitle": "{name}님의 바라사주 카드",
   "my.sajuCardAria": "{name}님 사주 결과 다시 보기",
   "my.emptyCardBody": "카드 본문이 아직 비어 있어요. 60카드 본문을 채우면 여기에도 반영됩니다.",
   "my.purchasedReports": "구매한 리포트",
   "my.testPayment": "테스트 결제 기준",
   "my.addOther": "다른 사람 사주 추가하기",
-  "my.getSajuCard": "사주바라 카드도 받아보기",
+  "my.getSajuCard": "바라사주 카드도 받아보기",
   "my.reportPurchased": "구매완료",
   "my.reportLocked": "잠금",
   "my.colorOwnerTitle": "{name}님의 컬러바라",
@@ -240,11 +240,11 @@ const ko = {
   "my.soulColor": "소울 {color}",
   "my.stageColor": "무대 {color}",
   "my.emptyTitle": "아직 받은 바라 카드가 없어요",
-  "my.emptyBody": "사주바라부터 시작해볼까요?",
-  "my.emptyCta": "사주바라 시작하기",
-  "my.report.saju.title": "사주바라 전체 해설",
+  "my.emptyBody": "바라사주부터 시작해볼까요?",
+  "my.emptyCta": "바라사주 시작하기",
+  "my.report.saju.title": "바라사주 전체 해설",
   "my.report.saju.desc": "성격·재물·관계·그림자 카드",
-  "my.report.saju.checkout": "{name}님 사주바라 전체 해설",
+  "my.report.saju.checkout": "{name}님 바라사주 전체 해설",
   "my.report.daewoon.title": "현재 10년 대운",
   "my.report.daewoon.desc": "5챕터·10년 세운·시크릿 솔루션",
   "my.report.daewoon.checkout": "{name}님 현재 대운 상세",
@@ -253,7 +253,7 @@ const ko = {
   "my.report.yearly.checkout": "{name}님 {year}년 전체 해설",
   "disclaimer.title": "참고용 콘텐츠 안내",
   "disclaimer.body":
-    "사주바라의 사주·운세·컬러수비학 결과는 입력 정보와 명식 해석, 생성형 AI를 바탕으로 만든 참고용 콘텐츠입니다. 의학·법률·재무·투자 등 전문 판단을 대체하지 않습니다.",
+    "바라사주의 사주·운세·컬러수비학 결과는 입력 정보와 명식 해석, 생성형 AI를 바탕으로 만든 참고용 콘텐츠입니다. 의학·법률·재무·투자 등 전문 판단을 대체하지 않습니다.",
   "loading.defaultFooter": "보통 잠시 후 자동으로 결과가 이어서 표시됩니다.",
 } as const;
 
@@ -282,14 +282,14 @@ const en: Dictionary = {
   "tab.charge": "Top up",
   "tab.archive": "Archive",
   "tab.today": "Today",
-  "home.brand": "Sajubara",
+  "home.brand": "BaraSaju",
   "home.tagline": "Warm, clear fortune reports",
   "home.hero.badge": "Free today",
   "home.hero.title": "Shall we open\nToday’s Saju?",
   "home.hero.description": "Check today’s score and the moments to be careful with first.",
   "home.menu.eyebrow": "Fortune Reports",
   "home.menu.title": "Choose the flow you need now",
-  "home.menu.saju.title": "Sajubara",
+  "home.menu.saju.title": "BaraSaju",
   "home.menu.saju.subtitle": "Core report",
   "home.menu.saju.description": "Your natural tendencies and relationship texture",
   "home.menu.color.title": "Color Bara",
@@ -301,7 +301,7 @@ const en: Dictionary = {
   "home.menu.yearly.title": "Yearly Fortune",
   "home.menu.yearly.subtitle": "Annual flow",
   "home.menu.yearly.description": "Monthly rhythm and careful timing",
-  "home.footer.brand": "Sajubara · Warm fortune reports, like an onsen",
+  "home.footer.brand": "BaraSaju · Warm fortune reports, like an onsen",
   "home.footer.disclaimer":
     "Saju, fortune, and color numerology results are reference-only content and do not replace professional medical, legal, financial, or investment judgment.",
   "auth.signedOut": "Log in",
@@ -310,7 +310,7 @@ const en: Dictionary = {
   "auth.supabaseUnavailable":
     "Could not reach the Supabase login server. Check the Project URL and anon key, then restart the dev server.",
   "login.title": "Log in",
-  "login.welcome": "Welcome to Sajubara",
+  "login.welcome": "Welcome to BaraSaju",
   "login.description": "Log in to save saju profiles\nfor family, friends, and partners.",
   "login.envMissing":
     "⚠️ Supabase environment variables are not set yet. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in the console, then restart the dev server.",
@@ -476,13 +476,13 @@ const en: Dictionary = {
   "my.signOut": "Log out",
   "my.managePeople": "Manage",
   "my.savedPeople": "Saved people",
-  "my.sajuCardTitle": "{name}’s Sajubara card",
+  "my.sajuCardTitle": "{name}’s BaraSaju card",
   "my.sajuCardAria": "Open {name}’s saju result again",
   "my.emptyCardBody": "This card body is still empty. Once the 60 card texts are filled, it will appear here too.",
   "my.purchasedReports": "Purchased reports",
   "my.testPayment": "Test payment basis",
   "my.addOther": "Add another person",
-  "my.getSajuCard": "Get a Sajubara card too",
+  "my.getSajuCard": "Get a BaraSaju card too",
   "my.reportPurchased": "Purchased",
   "my.reportLocked": "Locked",
   "my.colorOwnerTitle": "{name}’s Color Bara",
@@ -494,11 +494,11 @@ const en: Dictionary = {
   "my.soulColor": "Soul {color}",
   "my.stageColor": "Stage {color}",
   "my.emptyTitle": "No Bara cards yet",
-  "my.emptyBody": "Shall we start with Sajubara?",
-  "my.emptyCta": "Start Sajubara",
-  "my.report.saju.title": "Full Sajubara Reading",
+  "my.emptyBody": "Shall we start with BaraSaju?",
+  "my.emptyCta": "Start BaraSaju",
+  "my.report.saju.title": "Full BaraSaju Reading",
   "my.report.saju.desc": "Personality, wealth, relationships, and shadow cards",
-  "my.report.saju.checkout": "{name}’s full Sajubara reading",
+  "my.report.saju.checkout": "{name}’s full BaraSaju reading",
   "my.report.daewoon.title": "Current 10-year Daewoon",
   "my.report.daewoon.desc": "5 chapters, 10 yearly flows, secret solution",
   "my.report.daewoon.checkout": "{name}’s current daewoon detail",
@@ -507,7 +507,7 @@ const en: Dictionary = {
   "my.report.yearly.checkout": "{name}’s full {year} reading",
   "disclaimer.title": "Reference-only Content",
   "disclaimer.body":
-    "Sajubara’s saju, fortune, and color numerology results are reference-only content based on your inputs, chart interpretation, and generative AI. They do not replace professional medical, legal, financial, or investment judgment.",
+    "BaraSaju’s saju, fortune, and color numerology results are reference-only content based on your inputs, chart interpretation, and generative AI. They do not replace professional medical, legal, financial, or investment judgment.",
   "loading.defaultFooter": "Results usually appear automatically after a short moment.",
 };
 

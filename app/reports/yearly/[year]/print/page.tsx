@@ -52,7 +52,7 @@ export default async function YearlyPrintPage({
 
   if (!input || !Number.isFinite(year)) {
     return (
-      <PrintShell pdfTitle="사주바라 - 연도별 운세" returnHref={returnHref}>
+      <PrintShell pdfTitle="바라사주 - 연도별 운세" returnHref={returnHref}>
         <EmptyDocument />
       </PrintShell>
     );
@@ -210,7 +210,7 @@ function YearlyDocument({
     <article>
       <header className="border-b border-[#E7DCC3] pb-7">
         <div className="mb-3 text-[12px] font-black tracking-[0.22em] text-[#5C6E3E]">
-          SAJUBARA REPORT
+          BARASAJU REPORT
         </div>
         <h1 className="text-[32px] font-black leading-tight tracking-tight text-[#2A1F14]">
           {input.name}님의 {target.year}년 연도별 운세
@@ -321,7 +321,7 @@ function YearlyDocument({
       </DocumentSection>
 
       <footer className="mt-10 border-t border-[#E7DCC3] pt-5 text-[11px] leading-relaxed text-[#8B7758]">
-        사주바라 리포트는 사주 명식과 현재 입력 정보를 바탕으로 생성된 참고용 운세 콘텐츠입니다.
+        바라사주 리포트는 사주 명식과 현재 입력 정보를 바탕으로 생성된 참고용 운세 콘텐츠입니다.
         중요한 의사결정은 현실 조건과 전문가 조언을 함께 확인해 주세요.
       </footer>
     </article>
@@ -497,9 +497,9 @@ function inputToQs(sp: Awaited<SearchParams>, paid?: boolean): string {
 function buildReportPdfTitle(title: string): string {
   const cleaned = title.replace(/[\\/:*?"<>|]+/g, "-").replace(/\s+/g, " ").trim();
   const match = cleaned.match(/^(.+?)님의\s*(.+)$/);
-  if (!match) return sanitizeFileName(`사주바라 - ${cleaned}`);
+  if (!match) return sanitizeFileName(`바라사주 - ${cleaned}`);
   const [, name, reportTitle] = match;
-  return sanitizeFileName(`사주바라 - ${name.trim()} - ${reportTitle.trim()}`);
+  return sanitizeFileName(`바라사주 - ${name.trim()} - ${reportTitle.trim()}`);
 }
 
 function sanitizeFileName(value: string): string {

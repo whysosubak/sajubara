@@ -36,7 +36,7 @@ export default async function PortOneCheckoutPage({
       product={sp.product ?? "saju"}
       returnTo={returnTo}
       storeId={process.env.NEXT_PUBLIC_PORTONE_STORE_ID ?? ""}
-      title={sp.title ?? "사주바라 전체 해설"}
+      title={sp.title ?? "바라사주 전체 해설"}
     />
   );
 }

@@ -307,13 +307,13 @@ function CrossSell() {
         더 깊게 보고 싶다면
       </h2>
       <p className="mt-1 text-[12px] leading-relaxed text-sb-ink-2">
-        컬러는 가볍게 보는 입구, 사주바라는 생년월일시까지 반영한 전체 리포트예요.
+        컬러는 가볍게 보는 입구, 바라사주는 생년월일시까지 반영한 전체 리포트예요.
       </p>
       <Link
         href="/saju"
         className="mt-3 flex items-center justify-center rounded-full bg-sb-olive px-4 py-3 text-[13px] font-extrabold text-white"
       >
-        사주바라로 더 자세히 보기
+        바라사주로 더 자세히 보기
       </Link>
     </section>
   );

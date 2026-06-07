@@ -107,7 +107,7 @@ export default function MyPage() {
       await supabase.auth.signOut();
       window.location.assign("/");
     } catch (error) {
-      console.error("[sajubara] sign out failed", error);
+      console.error("[barasaju] sign out failed", error);
       setSigningOut(false);
     }
   }

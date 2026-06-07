@@ -101,7 +101,7 @@ export default function MockCheckoutClient({
         returnTo,
       });
     } catch (error) {
-      console.error("[sajubara] mock entitlement save failed", error);
+      console.error("[barasaju] mock entitlement save failed", error);
     }
 
     const redirectTimer = window.setTimeout(() => {

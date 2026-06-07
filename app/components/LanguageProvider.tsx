@@ -88,22 +88,22 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 function documentTitle(pathname: string | null, locale: Locale): string {
   const path = pathname ?? "/";
   if (locale === "en") {
-    if (path.startsWith("/terms")) return "Terms of Service | Sajubara";
-    if (path.startsWith("/privacy")) return "Privacy Policy | Sajubara";
-    if (path.startsWith("/refund")) return "Refund and Withdrawal Policy | Sajubara";
-    if (path.startsWith("/today")) return "Today’s Fortune | Sajubara";
-    if (path.startsWith("/people")) return "Manage Saju Profiles | Sajubara";
-    if (path.startsWith("/charge")) return "Top Up | Sajubara";
-    if (path.startsWith("/color")) return "Color Bara | Sajubara";
-    if (path.startsWith("/login")) return "Log in | Sajubara";
-    if (path.startsWith("/my")) return "Archive | Sajubara";
-    return "Sajubara - Warm, clear fortune reports";
+    if (path.startsWith("/terms")) return "Terms of Service | BaraSaju";
+    if (path.startsWith("/privacy")) return "Privacy Policy | BaraSaju";
+    if (path.startsWith("/refund")) return "Refund and Withdrawal Policy | BaraSaju";
+    if (path.startsWith("/today")) return "Today’s Fortune | BaraSaju";
+    if (path.startsWith("/people")) return "Manage Saju Profiles | BaraSaju";
+    if (path.startsWith("/charge")) return "Top Up | BaraSaju";
+    if (path.startsWith("/color")) return "Color Bara | BaraSaju";
+    if (path.startsWith("/login")) return "Log in | BaraSaju";
+    if (path.startsWith("/my")) return "Archive | BaraSaju";
+    return "BaraSaju - Warm, clear fortune reports";
   }
 
-  if (path.startsWith("/terms")) return "이용약관 | 사주바라";
-  if (path.startsWith("/privacy")) return "개인정보처리방침 | 사주바라";
-  if (path.startsWith("/refund")) return "환불 및 청약철회 정책 | 사주바라";
-  return "사주바라 — 바라가 봐주면 다 맞아~";
+  if (path.startsWith("/terms")) return "이용약관 | 바라사주";
+  if (path.startsWith("/privacy")) return "개인정보처리방침 | 바라사주";
+  if (path.startsWith("/refund")) return "환불 및 청약철회 정책 | 바라사주";
+  return "바라사주 — 바라가 봐주면 다 맞아~";
 }
 
 export function useI18n() {

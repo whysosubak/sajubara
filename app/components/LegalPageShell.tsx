@@ -54,7 +54,7 @@ export default function LegalPageShell({
           }}
         >
           <p className="text-[10.5px] font-extrabold uppercase tracking-[0.16em] text-sb-olive-light">
-            Sajubara Policy
+            BaraSaju Policy
           </p>
           <h1 className="mt-2 text-[25px] font-extrabold leading-tight text-sb-ink">
             <LocalizedValue ko={title.ko} en={title.en} />

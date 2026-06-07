@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sajubara.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.barasaju.com";
 
 export default function robots(): MetadataRoute.Robots {
   const allowIndexing = process.env.NEXT_PUBLIC_INDEX_SITE !== "false";

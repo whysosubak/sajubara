@@ -1,4 +1,4 @@
-export const MOCK_ENTITLEMENT_COOKIE = "sajubara_mock_entitlements";
+export const MOCK_ENTITLEMENT_COOKIE = "barasaju_mock_entitlements";
 
 export type MockPlanId = "single" | "today-pack" | "life-pack";
 export type MockProduct = "saju" | "daewoon" | "yearly" | "daily";
@@ -390,7 +390,7 @@ function migrateYuzuPurchases(
 
 function yearFromReturnTo(returnTo: string): number | undefined {
   try {
-    const url = new URL(returnTo, "http://sajubara.local");
+    const url = new URL(returnTo, "http://barasaju.local");
     const match = url.pathname.match(/^\/yearly\/(\d{4})$/);
     if (!match) return undefined;
     const year = Number(match[1]);
@@ -402,7 +402,7 @@ function yearFromReturnTo(returnTo: string): number | undefined {
 
 function daewoonIndexFromReturnTo(returnTo: string): number | undefined {
   try {
-    const url = new URL(returnTo, "http://sajubara.local");
+    const url = new URL(returnTo, "http://barasaju.local");
     const index = url.searchParams.get("index");
     if (!index || !/^\d+$/.test(index)) return undefined;
     return Number(index);

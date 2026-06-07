@@ -367,7 +367,7 @@ function FooterMini() {
         </Link>
       </div>
       <p className="text-[10px] text-sb-ink-3 opacity-60">
-        © {new Date().getFullYear()} sajubara
+        © {new Date().getFullYear()} barasaju
       </p>
     </footer>
   );

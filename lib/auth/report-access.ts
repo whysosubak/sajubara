@@ -40,12 +40,12 @@ export async function buildReportAccessItems(
     {
       key: "saju",
       icon: "🌿",
-      title: "사주바라 전체 해설",
+      title: "바라사주 전체 해설",
       description: "성격·재물·관계·그림자 카드",
       href: sajuHref,
       checkoutHref: reportCheckoutHref({
         product: sajuPersonProduct(input),
-        title: "사주바라 전체 해설",
+        title: "바라사주 전체 해설",
         returnTo: sajuHref,
       }),
       unlocked: sajuUnlocked,

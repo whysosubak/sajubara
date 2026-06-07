@@ -47,7 +47,7 @@ export function appendPaidParamsToReturnTo({
   returnTo: string;
 }): string {
   try {
-    const url = new URL(returnTo, "http://sajubara.local");
+    const url = new URL(returnTo, "http://barasaju.local");
     url.searchParams.set("paid", "1");
     url.searchParams.set("plan", plan);
     url.searchParams.set("amount", String(amount));

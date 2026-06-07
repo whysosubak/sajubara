@@ -3,7 +3,7 @@ import { LocalizedValue } from "@/app/components/LanguageProvider";
 import LegalPageShell, { LegalSection } from "@/app/components/LegalPageShell";
 
 export const metadata: Metadata = {
-  title: "환불 및 청약철회 정책 | 사주바라",
+  title: "환불 및 청약철회 정책 | 바라사주",
 };
 
 const UPDATED_AT = {
@@ -23,8 +23,8 @@ export default function RefundPage() {
     >
       <LegalSection title={{ ko: "1. 기본 원칙", en: "1. Basic Principle" }}>
         <LocalizedValue
-          ko="사주바라는 결제 화면에서 상품명, 금액, 제공 범위, 잠금 해제 대상을 안내합니다. 결제 전 내용을 확인한 뒤 구매해 주세요. 결제 오류나 중복 결제처럼 이용자에게 책임이 없는 문제는 확인 후 환불 또는 정정 처리합니다."
-          en="Sajubara shows the product name, price, included scope, and unlock target on the payment screen. Please review the details before purchase. Issues not caused by the user, such as payment errors or duplicate payments, will be checked and refunded or corrected."
+          ko="바라사주는 결제 화면에서 상품명, 금액, 제공 범위, 잠금 해제 대상을 안내합니다. 결제 전 내용을 확인한 뒤 구매해 주세요. 결제 오류나 중복 결제처럼 이용자에게 책임이 없는 문제는 확인 후 환불 또는 정정 처리합니다."
+          en="BaraSaju shows the product name, price, included scope, and unlock target on the payment screen. Please review the details before purchase. Issues not caused by the user, such as payment errors or duplicate payments, will be checked and refunded or corrected."
         />
       </LegalSection>
 
@@ -58,8 +58,8 @@ export default function RefundPage() {
 
       <LegalSection title={{ ko: "6. 환불 신청 방법", en: "6. How to Request a Refund" }}>
         <LocalizedValue
-          ko="환불 신청은 support@sajubara.com 으로 결제일, 결제 금액, 구매 상품, 계정 이메일, 환불 사유를 보내 주세요. 접수 후 결제사 확인이 필요한 경우 처리에 영업일 기준 수 일이 걸릴 수 있습니다."
-          en="To request a refund, send the payment date, payment amount, purchased product, account email, and reason for refund to support@sajubara.com. If confirmation with a payment provider is required, processing may take several business days."
+          ko="환불 신청은 support@barasaju.com 으로 결제일, 결제 금액, 구매 상품, 계정 이메일, 환불 사유를 보내 주세요. 접수 후 결제사 확인이 필요한 경우 처리에 영업일 기준 수 일이 걸릴 수 있습니다."
+          en="To request a refund, send the payment date, payment amount, purchased product, account email, and reason for refund to support@barasaju.com. If confirmation with a payment provider is required, processing may take several business days."
         />
       </LegalSection>
 

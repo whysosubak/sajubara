@@ -29,7 +29,7 @@ export async function proxy(request: NextRequest) {
     await supabase.auth.getUser();
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
-      console.warn("[sajubara] Supabase session refresh skipped:", error);
+      console.warn("[barasaju] Supabase session refresh skipped:", error);
     }
   }
 

@@ -98,7 +98,7 @@ export default function PortOneCheckoutClient({
 
     setStep("processing");
     setErrorMessage("");
-    const paymentId = `sajubara-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const paymentId = `barasaju-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const completionParams = new URLSearchParams({
       amount: String(selected.amount),
       paymentId,
