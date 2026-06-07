@@ -169,13 +169,6 @@ type MenuItem = {
   descriptionKey: TranslationKey;
   image: string;
   imageEn?: string;
-  bannerCopyEn?: {
-    eyebrow: string;
-    title: [string, string];
-    caption: string;
-  };
-  bannerTextColor?: string;
-  bannerBorderColor?: string;
   badgeKey?: TranslationKey;
   fallbackFrom: string;
   fallbackTo: string;
@@ -193,13 +186,6 @@ const MENU: MenuItem[] = [
     descriptionKey: "home.menu.saju.description",
     image: "/images/banners/saju.png",
     imageEn: "/images/banners/saju-en.png",
-    bannerCopyEn: {
-      eyebrow: "CORE REPORT",
-      title: ["Bara", "Saju"],
-      caption: "Inner Flow",
-    },
-    bannerTextColor: "#AF655E",
-    bannerBorderColor: "rgba(175,101,94,0.5)",
     fallbackFrom: "#FCE7E3",
     fallbackTo: "#F5C8C0",
     priceLabelKey: "common.partlyFree",
@@ -213,13 +199,6 @@ const MENU: MenuItem[] = [
     descriptionKey: "home.menu.color.description",
     image: "/images/banners/color.png",
     imageEn: "/images/banners/color-en.png",
-    bannerCopyEn: {
-      eyebrow: "COLOR REPORT",
-      title: ["Color", "Bara"],
-      caption: "Birthday Color",
-    },
-    bannerTextColor: "#5D875D",
-    bannerBorderColor: "rgba(93,135,93,0.48)",
     badgeKey: "common.free",
     fallbackFrom: "#EDEAC8",
     fallbackTo: "#C9DFE5",
@@ -234,13 +213,6 @@ const MENU: MenuItem[] = [
     descriptionKey: "home.menu.daewoon.description",
     image: "/images/banners/daewoon-blue.png",
     imageEn: "/images/banners/daewoon-blue-en.png",
-    bannerCopyEn: {
-      eyebrow: "MAJOR FLOW",
-      title: ["10-Year", "Cycle"],
-      caption: "Timing Guide",
-    },
-    bannerTextColor: "#5F7FC3",
-    bannerBorderColor: "rgba(95,127,195,0.48)",
     fallbackFrom: "#D9E9F7",
     fallbackTo: "#7EA8CF",
     priceLabelKey: "common.partlyFree",
@@ -255,13 +227,6 @@ const MENU: MenuItem[] = [
     descriptionKey: "home.menu.yearly.description",
     image: "/images/banners/yearly.png",
     imageEn: "/images/banners/yearly-en.png",
-    bannerCopyEn: {
-      eyebrow: "YEARLY GUIDE",
-      title: ["Yearly", "Fortune"],
-      caption: "Monthly Flow",
-    },
-    bannerTextColor: "#AE7A2C",
-    bannerBorderColor: "rgba(174,122,44,0.48)",
     fallbackFrom: "#F5E5B6",
     fallbackTo: "#E8CB7B",
     priceLabelKey: "common.partlyFree",
@@ -282,70 +247,6 @@ function MenuGrid() {
           --sb-banner-current: var(--sb-banner-en);
         }
 
-        .sb-banner-copy {
-          display: none;
-        }
-
-        html[lang="en"] .sb-banner-copy {
-          display: flex;
-        }
-
-        .sb-banner-copy {
-          letter-spacing: 0;
-        }
-
-        .sb-banner-copy-card {
-          color: var(--sb-banner-text);
-          text-shadow: 0 1px 0 rgba(255, 253, 245, 0.58);
-        }
-
-        .sb-banner-rule {
-          display: flex;
-          width: 58%;
-          align-items: center;
-          gap: 5px;
-          color: var(--sb-banner-text);
-          opacity: 0.46;
-        }
-
-        .sb-banner-rule::before,
-        .sb-banner-rule::after {
-          content: "";
-          height: 1px;
-          flex: 1;
-          background: currentColor;
-        }
-
-        .sb-banner-rule-mark {
-          position: relative;
-          width: 8px;
-          height: 8px;
-          border: 1px solid currentColor;
-          border-radius: 999px;
-        }
-
-        .sb-banner-rule-mark::before {
-          content: "";
-          position: absolute;
-          left: 50%;
-          top: -4px;
-          width: 1px;
-          height: 14px;
-          transform: translateX(-50%);
-          background: currentColor;
-          opacity: 0.72;
-        }
-
-        .sb-banner-title {
-          font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
-          font-size: 25px;
-          font-weight: 700;
-          line-height: 0.78;
-        }
-
-        .sb-banner-title span {
-          white-space: nowrap;
-        }
       `}</style>
       <div className="text-[10.5px] font-extrabold text-sb-ink-3 tracking-[0.18em] uppercase mb-1">
         <T k="home.menu.eyebrow" />
@@ -366,8 +267,6 @@ function MenuCard({ item }: { item: MenuItem }) {
   const bannerStyle = {
     "--sb-banner-ko": `url(${item.image})`,
     "--sb-banner-en": `url(${item.imageEn ?? item.image})`,
-    "--sb-banner-text": item.bannerTextColor ?? "var(--sb-ink)",
-    "--sb-banner-border": item.bannerBorderColor ?? "rgba(91,74,54,0.3)",
     backgroundImage: `linear-gradient(180deg, rgba(42,31,20,0) 45%, rgba(42,31,20,0.45) 100%), var(--sb-banner-current), linear-gradient(160deg, ${item.fallbackFrom} 0%, ${item.fallbackTo} 100%)`,
     backgroundSize: "cover, cover, cover",
     backgroundPosition: "center, center",
@@ -387,35 +286,6 @@ function MenuCard({ item }: { item: MenuItem }) {
         style={bannerStyle}
         aria-hidden
       >
-        {item.bannerCopyEn && (
-          <div className="sb-banner-copy absolute left-[10.5%] top-[9%] h-[77%] w-[46%] items-center justify-center">
-            <div
-              className="sb-banner-copy-card relative flex h-full w-full flex-col items-center justify-center rounded-[12px] px-2.5 py-4 text-center"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(255, 250, 232, 0.12), rgba(255, 246, 222, 0.18))",
-              }}
-            >
-              <span className="sb-banner-rule mb-1" aria-hidden>
-                <span className="sb-banner-rule-mark" />
-              </span>
-              <span className="text-[6.5px] font-extrabold leading-tight opacity-80">
-                {item.bannerCopyEn.eyebrow}
-              </span>
-              <span className="sb-banner-title mt-3 flex flex-col items-center">
-                <span>{item.bannerCopyEn.title[0]}</span>
-                <span>{item.bannerCopyEn.title[1]}</span>
-              </span>
-              <span className="mt-3 text-[7.5px] font-bold leading-tight opacity-72">
-                {item.bannerCopyEn.caption}
-              </span>
-              <span className="sb-banner-rule mt-1" aria-hidden>
-                <span className="sb-banner-rule-mark" />
-              </span>
-            </div>
-          </div>
-        )}
-
         {item.badgeKey && (
           <span
             className="absolute top-2 right-2 inline-flex items-center px-2 py-[3px] rounded-full text-[10px] font-extrabold text-sb-ink"
