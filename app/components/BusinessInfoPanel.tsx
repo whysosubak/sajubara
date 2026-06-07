@@ -45,14 +45,6 @@ export default function BusinessInfoPanel({
           }
         />
         <BusinessInfoRow
-          label={{ ko: "이메일", en: "Email" }}
-          value={
-            <a href={`mailto:${BUSINESS_INFO.email}`} className="underline underline-offset-2">
-              {BUSINESS_INFO.email}
-            </a>
-          }
-        />
-        <BusinessInfoRow
           label={{ ko: "호스팅", en: "Hosting" }}
           value={BUSINESS_INFO.hostingProvider}
         />
