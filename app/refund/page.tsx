@@ -7,8 +7,8 @@ export const metadata: Metadata = {
 };
 
 const UPDATED_AT = {
-  ko: "2026년 5월 22일",
-  en: "May 22, 2026",
+  ko: "2026년 6월 7일",
+  en: "June 7, 2026",
 };
 
 export default function RefundPage() {
@@ -58,8 +58,8 @@ export default function RefundPage() {
 
       <LegalSection title={{ ko: "6. 환불 신청 방법", en: "6. How to Request a Refund" }}>
         <LocalizedValue
-          ko="환불 신청은 support@barasaju.com 으로 결제일, 결제 금액, 구매 상품, 계정 이메일, 환불 사유를 보내 주세요. 접수 후 결제사 확인이 필요한 경우 처리에 영업일 기준 수 일이 걸릴 수 있습니다."
-          en="To request a refund, send the payment date, payment amount, purchased product, account email, and reason for refund to support@barasaju.com. If confirmation with a payment provider is required, processing may take several business days."
+          ko="환불 신청은 support@barasaju.com 또는 하단 사업자 정보의 연락처로 결제일, 결제 금액, 구매 상품, 계정 이메일, 환불 사유를 보내 주세요. 접수 후 결제사 확인이 필요한 경우 처리에 영업일 기준 수 일이 걸릴 수 있습니다."
+          en="To request a refund, send the payment date, payment amount, purchased product, account email, and reason for refund to support@barasaju.com or the contact information shown below. If confirmation with a payment provider is required, processing may take several business days."
         />
       </LegalSection>
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import BusinessInfoPanel from "@/app/components/BusinessInfoPanel";
 import { LocalizedValue } from "@/app/components/LanguageProvider";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 
@@ -70,7 +71,10 @@ export default function LegalPageShell({
           </p>
         </section>
 
-        <div className="mt-4 flex flex-col gap-3">{children}</div>
+        <div className="mt-4 flex flex-col gap-3">
+          {children}
+          <BusinessInfoPanel />
+        </div>
       </article>
     </main>
   );

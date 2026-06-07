@@ -1,4 +1,5 @@
 import AuthButton from "@/app/components/AuthButton";
+import BusinessInfoPanel from "@/app/components/BusinessInfoPanel";
 import { LocalizedValue, T } from "@/app/components/LanguageProvider";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import MenuCardLink from "@/app/components/MenuCardLink";
@@ -355,6 +356,7 @@ function FooterMini() {
       <p className="text-[10.5px] font-semibold text-sb-ink-3 leading-relaxed opacity-80">
         <T k="home.footer.disclaimer" />
       </p>
+      <BusinessInfoPanel compact />
       <div className="flex items-center justify-center gap-3 text-[10.5px] font-extrabold text-sb-ink-3">
         <Link href="/terms" className="underline underline-offset-2">
           <T k="common.terms" />

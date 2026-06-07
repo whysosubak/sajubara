@@ -3,6 +3,7 @@
 import { requestPayment, type PaymentPayMethod } from "@portone/browser-sdk/v2";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import BusinessInfoPanel from "@/app/components/BusinessInfoPanel";
 import {
   MOCK_ENTITLEMENT_COOKIE,
   mergeMockEntitlements,
@@ -352,6 +353,9 @@ export default function PortOneCheckoutClient({
                     ? "이미 열려 있어요 · 결과 보기"
                     : `결제하기 · ₩${formattedAmount}`}
             </button>
+          </div>
+          <div className="mt-5">
+            <BusinessInfoPanel compact />
           </div>
         </section>
       </div>

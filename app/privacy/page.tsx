@@ -7,8 +7,8 @@ export const metadata: Metadata = {
 };
 
 const UPDATED_AT = {
-  ko: "2026년 5월 22일",
-  en: "May 22, 2026",
+  ko: "2026년 6월 7일",
+  en: "June 7, 2026",
 };
 
 export default function PrivacyPage() {
@@ -72,8 +72,8 @@ export default function PrivacyPage() {
 
       <LegalSection title={{ ko: "8. 개인정보 문의", en: "8. Privacy Contact" }}>
         <LocalizedValue
-          ko="개인정보 관련 문의, 삭제 요청, 권리 행사는 support@barasaju.com 으로 접수합니다. 개인정보 보호책임자명, 연락처, 사업자 정보 등 운영 정보가 변경되는 경우 본 방침과 서비스 하단 고지에 반영합니다."
-          en="Privacy questions, deletion requests, and rights requests can be sent to support@barasaju.com. If operating information such as the privacy officer, contact details, or business information changes, this policy and the service footer notice will be updated."
+          ko="개인정보 관련 문의, 삭제 요청, 권리 행사는 support@barasaju.com 또는 하단 사업자 정보의 연락처로 접수합니다. 개인정보 보호책임자는 바라사주 운영자이며, 연락처와 사업자 정보가 변경되는 경우 본 방침과 서비스 하단 고지에 반영합니다."
+          en="Privacy questions, deletion requests, and rights requests can be sent to support@barasaju.com or the contact information shown below. The privacy officer is the BaraSaju operator, and changes to contact details or business information will be reflected in this policy and the service footer notice."
         />
       </LegalSection>
     </LegalPageShell>

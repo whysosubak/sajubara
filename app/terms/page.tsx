@@ -7,8 +7,8 @@ export const metadata: Metadata = {
 };
 
 const UPDATED_AT = {
-  ko: "2026년 5월 22일",
-  en: "May 22, 2026",
+  ko: "2026년 6월 7일",
+  en: "June 7, 2026",
 };
 
 export default function TermsPage() {
@@ -79,8 +79,8 @@ export default function TermsPage() {
 
       <LegalSection title={{ ko: "9. 문의", en: "9. Contact" }}>
         <LocalizedValue
-          ko="서비스, 결제, 환불, 개인정보 관련 문의는 고객센터 이메일 support@barasaju.com 으로 접수합니다. 사업자 정보, 통신판매업 신고번호, 대표자명, 주소, 고객센터 운영시간 등 운영 정보는 서비스 하단과 정책 문서에 고지하며 변경 시 최신 내용으로 반영합니다."
-          en="Questions about service, payment, refunds, or personal information can be sent to support@barasaju.com. Business information, e-commerce registration number, representative name, address, support hours, and other operating information are provided in the service footer and policy documents and will be updated when changed."
+          ko="서비스, 결제, 환불, 개인정보 관련 문의는 고객센터 이메일 support@barasaju.com 또는 하단 사업자 정보의 연락처로 접수합니다. 사업자 정보, 대표자명, 주소, 연락처 등 운영 정보는 서비스 하단과 정책 문서에 고지하며 변경 시 최신 내용으로 반영합니다."
+          en="Questions about service, payment, refunds, or personal information can be sent to support@barasaju.com or the contact information shown below. Business information, representative name, address, contact details, and other operating information are provided in the service footer and policy documents and will be updated when changed."
         />
       </LegalSection>
     </LegalPageShell>

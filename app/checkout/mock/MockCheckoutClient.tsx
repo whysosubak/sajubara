@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import BusinessInfoPanel from "@/app/components/BusinessInfoPanel";
 import {
   MOCK_ENTITLEMENT_COOKIE,
   mergeMockEntitlements,
@@ -385,6 +386,9 @@ export default function MockCheckoutClient({
                 결과 바로 보기
               </Link>
             )}
+          </div>
+          <div className="mt-5">
+            <BusinessInfoPanel compact />
           </div>
 
           <p className="mt-auto pt-6 text-center text-[11px] font-semibold text-sb-ink-3">
