@@ -28,14 +28,26 @@ export default function BusinessInfoPanel({
         <LocalizedValue ko="사업자 정보" en="Business Information" />
       </p>
       <dl className={compact ? "mt-0 grid grid-cols-[auto_1fr] gap-x-1.5 gap-y-0.5" : "mt-2 grid grid-cols-[auto_1fr] gap-x-2 gap-y-1.5"}>
-        <BusinessInfoRow label={{ ko: "서비스명", en: "Service" }} value={BUSINESS_INFO.serviceName} />
-        <BusinessInfoRow label={{ ko: "상호", en: "Seller" }} value={BUSINESS_INFO.sellerName} />
-        <BusinessInfoRow label={{ ko: "대표자", en: "Representative" }} value={BUSINESS_INFO.representativeName} />
+        <BusinessInfoRow
+          label={{ ko: "서비스명", en: "Service" }}
+          value={<LocalizedValue ko={BUSINESS_INFO.serviceName.ko} en={BUSINESS_INFO.serviceName.en} />}
+        />
+        <BusinessInfoRow
+          label={{ ko: "상호", en: "Seller" }}
+          value={<LocalizedValue ko={BUSINESS_INFO.sellerName.ko} en={BUSINESS_INFO.sellerName.en} />}
+        />
+        <BusinessInfoRow
+          label={{ ko: "대표자", en: "Representative" }}
+          value={<LocalizedValue ko={BUSINESS_INFO.representativeName.ko} en={BUSINESS_INFO.representativeName.en} />}
+        />
         <BusinessInfoRow
           label={{ ko: "사업자등록번호", en: "Business registration no." }}
           value={BUSINESS_INFO.businessRegistrationNumber}
         />
-        <BusinessInfoRow label={{ ko: "주소", en: "Address" }} value={BUSINESS_INFO.address} />
+        <BusinessInfoRow
+          label={{ ko: "주소", en: "Address" }}
+          value={<LocalizedValue ko={BUSINESS_INFO.address.ko} en={BUSINESS_INFO.address.en} />}
+        />
         <BusinessInfoRow
           label={{ ko: "전화", en: "Phone" }}
           value={

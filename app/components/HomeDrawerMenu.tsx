@@ -19,14 +19,14 @@ import { createPortal } from "react-dom";
 import AuthButton from "@/app/components/AuthButton";
 import BusinessInfoPanel from "@/app/components/BusinessInfoPanel";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
-import { T } from "@/app/components/LanguageProvider";
+import { T, useI18n } from "@/app/components/LanguageProvider";
 import type { TranslationKey } from "@/app/i18n";
 
 const reportLinks: DrawerLink[] = [
   {
     href: "/today",
-    title: "오늘의 운세",
-    description: "무료 데일리 흐름",
+    titleKey: "home.drawer.today.title",
+    descriptionKey: "home.drawer.today.description",
     icon: IconSun,
   },
   {
@@ -58,20 +58,20 @@ const reportLinks: DrawerLink[] = [
 const appLinks: DrawerLink[] = [
   {
     href: "/charge",
-    title: "충전소",
-    description: "유자 충전과 결제",
+    titleKey: "home.drawer.charge.title",
+    descriptionKey: "home.drawer.charge.description",
     icon: IconWallet,
   },
   {
     href: "/people",
-    title: "사주 관리",
-    description: "내 사주와 다른 사람",
+    titleKey: "home.drawer.people.title",
+    descriptionKey: "home.drawer.people.description",
     icon: IconUsers,
   },
   {
     href: "/my",
-    title: "보관함",
-    description: "구매한 리포트",
+    titleKey: "home.drawer.archive.title",
+    descriptionKey: "home.drawer.archive.description",
     icon: IconArchive,
   },
 ];
@@ -84,15 +84,14 @@ const policyLinks = [
 
 type DrawerLink = {
   href: string;
-  title?: string;
   titleKey?: TranslationKey;
-  description?: string;
   descriptionKey?: TranslationKey;
   icon: typeof IconSparkles;
 };
 
 export default function HomeDrawerMenu() {
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
 
   return (
     <>
@@ -101,7 +100,7 @@ export default function HomeDrawerMenu() {
         onClick={() => setOpen(true)}
         className="flex h-10 w-10 items-center justify-center rounded-full bg-sb-paper text-sb-ink-2 active:scale-[0.97]"
         style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
-        aria-label="메뉴 열기"
+        aria-label={t("home.drawer.open")}
         aria-expanded={open}
       >
         <IconMenu2 size={21} stroke={2.2} aria-hidden />
@@ -115,18 +114,20 @@ export default function HomeDrawerMenu() {
 }
 
 function DrawerOverlay({ onClose }: { onClose: () => void }) {
+  const { t } = useI18n();
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-[rgba(30,24,17,0.38)]">
       <button
         type="button"
         className="absolute inset-0 cursor-default"
         onClick={onClose}
-        aria-label="메뉴 닫기"
+        aria-label={t("home.drawer.close")}
       />
       <aside
         className="relative flex h-full w-[min(360px,calc(100vw-42px))] flex-col bg-sb-bg"
         style={{ boxShadow: "-18px 0 36px rgba(42,31,20,0.2)" }}
-        aria-label="전체 메뉴"
+        aria-label={t("home.drawer.label")}
       >
         <div
           className="shrink-0 px-5 pb-4 pt-4"
@@ -149,7 +150,7 @@ function DrawerOverlay({ onClose }: { onClose: () => void }) {
               onClick={onClose}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-sb-paper text-sb-ink-2"
               style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
-              aria-label="메뉴 닫기"
+              aria-label={t("home.drawer.close")}
             >
               <IconX size={19} stroke={2.2} aria-hidden />
             </button>
@@ -162,13 +163,13 @@ function DrawerOverlay({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
-          <DrawerSection title="운세 리포트">
+          <DrawerSection titleKey="home.drawer.reportSection">
             {reportLinks.map((item) => (
               <DrawerNavLink key={item.href} item={item} onClick={onClose} />
             ))}
           </DrawerSection>
 
-          <DrawerSection title="내 메뉴">
+          <DrawerSection titleKey="home.drawer.mySection">
             {appLinks.map((item) => (
               <DrawerNavLink key={item.href} item={item} onClick={onClose} />
             ))}
@@ -176,7 +177,7 @@ function DrawerOverlay({ onClose }: { onClose: () => void }) {
 
           <section className="mt-5">
             <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-sb-ink-3">
-              Policy
+              <T k="home.drawer.policySection" />
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               {policyLinks.map((item) => (
@@ -216,16 +217,16 @@ function DrawerOverlay({ onClose }: { onClose: () => void }) {
 }
 
 function DrawerSection({
-  title,
+  titleKey,
   children,
 }: {
-  title: string;
+  titleKey: TranslationKey;
   children: ReactNode;
 }) {
   return (
     <section className="mt-6 first:mt-0">
       <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-sb-ink-3">
-        {title}
+        <T k={titleKey} />
       </p>
       <div className="mt-2 flex flex-col gap-2">{children}</div>
     </section>
@@ -256,10 +257,10 @@ function DrawerNavLink({
       </span>
       <span className="min-w-0">
         <span className="block text-[14px] font-extrabold leading-tight text-sb-ink">
-          {item.titleKey ? <T k={item.titleKey} /> : item.title}
+          {item.titleKey ? <T k={item.titleKey} /> : null}
         </span>
         <span className="mt-1 block text-[11px] font-semibold leading-snug text-sb-ink-3">
-          {item.descriptionKey ? <T k={item.descriptionKey} /> : item.description}
+          {item.descriptionKey ? <T k={item.descriptionKey} /> : null}
         </span>
       </span>
       <IconChevronRight size={16} className="text-sb-ink-3" aria-hidden />

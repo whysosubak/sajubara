@@ -326,71 +326,88 @@ function ColorRecordsSection({
   records: ColorBaraRecord[];
   ownerName?: string;
 }) {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
+  const displayOwnerName = ownerName ? displayColorRecordName(ownerName, locale) : "";
 
   return (
     <section>
       <div className="mb-2 flex items-center justify-between px-1">
         <h2 className="text-[12px] font-extrabold text-sb-olive-light tracking-wider uppercase">
-          {ownerName ? t("my.colorOwnerTitle", { name: ownerName }) : t("my.colorTitle")}
+          {displayOwnerName
+            ? t("my.colorOwnerTitle", { name: displayOwnerName })
+            : ownerName
+              ? t("my.colorOwnerFallbackTitle")
+              : t("my.colorTitle")}
         </h2>
         <span className="text-[11px] font-bold text-sb-ink-3">
           {t("my.freeReportCount", { count: records.length })}
         </span>
       </div>
       <div className="flex flex-col gap-2">
-        {records.map((record) => (
-          <Link
-            key={record.id}
-            href={buildColorResultHref(record)}
-            className="rounded-sb-lg bg-sb-paper px-4 py-3.5 flex items-center gap-3 active:scale-[0.99] transition-transform"
-            style={{ boxShadow: "var(--shadow-sb-card), inset 0 0 0 1px rgba(91,74,54,0.06)" }}
-          >
-            <div
-              className="h-11 w-11 rounded-full shrink-0"
-              style={{
-                background:
-                  `radial-gradient(circle at 35% 30%, ${record.report.soul.hex}, transparent 38%), radial-gradient(circle at 72% 72%, ${record.report.cheat.hex}, transparent 42%), var(--sb-cream)`,
-                boxShadow: "inset 0 0 0 1px rgba(91,74,54,0.08)",
-              }}
-            />
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                <h3 className="truncate text-[14px] font-extrabold text-sb-ink tracking-tight">
-                  {t("my.destinyColor", { name: record.name })}
-                </h3>
-                <span
-                  className="shrink-0 rounded-full px-1.5 py-[2px] text-[9px] font-extrabold text-sb-olive-dark"
-                  style={{ background: "var(--sb-cream)" }}
-                >
-                  {t("my.saved")}
-                </span>
-              </div>
-              <p className="mt-1 line-clamp-2 text-[11.5px] font-semibold text-sb-ink-3 leading-snug">
-                {t("my.coreColor", { color: record.report.cheat.colorKr })} · {record.lunarLabel}
-              </p>
-              <div className="mt-2 flex flex-wrap gap-1">
-                <ColorRecordChip
-                  label={t("my.soulColor", { color: record.report.soul.colorKr })}
-                  color={record.report.soul.hex}
-                />
-                <ColorRecordChip
-                  label={t("my.stageColor", { color: record.report.stage.colorKr })}
-                  color={record.report.stage.hex}
-                />
-              </div>
-            </div>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
-              <path
-                d="M4.5 2.5L7.8 6L4.5 9.5"
-                stroke="var(--sb-ink-3)"
-                strokeWidth="1.9"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+        {records.map((record) => {
+          const displayName = displayColorRecordName(record.name, locale);
+          const coreColor = colorLabel(record.report.cheat, locale);
+          const soulColor = colorLabel(record.report.soul, locale);
+          const stageColor = colorLabel(record.report.stage, locale);
+          const lunarLabel = locale === "ko"
+            ? record.lunarLabel
+            : `Lunar ${record.lunarMonth}/${record.lunarDay}`;
+
+          return (
+            <Link
+              key={record.id}
+              href={buildColorResultHref(record)}
+              className="rounded-sb-lg bg-sb-paper px-4 py-3.5 flex items-center gap-3 active:scale-[0.99] transition-transform"
+              style={{ boxShadow: "var(--shadow-sb-card), inset 0 0 0 1px rgba(91,74,54,0.06)" }}
+            >
+              <div
+                className="h-11 w-11 rounded-full shrink-0"
+                style={{
+                  background:
+                    `radial-gradient(circle at 35% 30%, ${record.report.soul.hex}, transparent 38%), radial-gradient(circle at 72% 72%, ${record.report.cheat.hex}, transparent 42%), var(--sb-cream)`,
+                  boxShadow: "inset 0 0 0 1px rgba(91,74,54,0.08)",
+                }}
               />
-            </svg>
-          </Link>
-        ))}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <h3 className="truncate text-[14px] font-extrabold text-sb-ink tracking-tight">
+                    {displayName
+                      ? t("my.destinyColor", { name: displayName })
+                      : t("my.destinyColorFallback")}
+                  </h3>
+                  <span
+                    className="shrink-0 rounded-full px-1.5 py-[2px] text-[9px] font-extrabold text-sb-olive-dark"
+                    style={{ background: "var(--sb-cream)" }}
+                  >
+                    {t("my.saved")}
+                  </span>
+                </div>
+                <p className="mt-1 line-clamp-2 text-[11.5px] font-semibold text-sb-ink-3 leading-snug">
+                  {t("my.coreColor", { color: coreColor })} · {lunarLabel}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  <ColorRecordChip
+                    label={t("my.soulColor", { color: soulColor })}
+                    color={record.report.soul.hex}
+                  />
+                  <ColorRecordChip
+                    label={t("my.stageColor", { color: stageColor })}
+                    color={record.report.stage.hex}
+                  />
+                </div>
+              </div>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
+                <path
+                  d="M4.5 2.5L7.8 6L4.5 9.5"
+                  stroke="var(--sb-ink-3)"
+                  strokeWidth="1.9"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
@@ -422,6 +439,24 @@ function ColorRecordChip({ label, color }: { label: string; color: string }) {
       {label}
     </span>
   );
+}
+
+function colorLabel(
+  item: { color: string; colorKr: string },
+  locale: "ko" | "en",
+): string {
+  return locale === "ko" ? item.colorKr : item.color;
+}
+
+function displayColorRecordName(name: string, locale: "ko" | "en"): string {
+  const trimmed = name.trim();
+  if (locale === "ko") {
+    return trimmed === "이름 없는 사람" ? "" : trimmed;
+  }
+  if (!trimmed || trimmed === "당신" || trimmed === "이름 없는 사람") {
+    return "";
+  }
+  return trimmed;
 }
 
 function LoadingState() {
