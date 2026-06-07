@@ -1,7 +1,5 @@
-import AuthButton from "@/app/components/AuthButton";
-import BusinessInfoPanel from "@/app/components/BusinessInfoPanel";
+import HomeDrawerMenu from "@/app/components/HomeDrawerMenu";
 import { LocalizedValue, T } from "@/app/components/LanguageProvider";
-import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import MenuCardLink from "@/app/components/MenuCardLink";
 import type { TranslationKey } from "@/app/i18n";
 import { todayLunarLabel } from "@/lib/saju/today";
@@ -25,7 +23,6 @@ export default function Home() {
       <div className="flex-1 overflow-y-auto">
         <OnsenHero lunarLabel={lunarLabel} dateLabel={dateLabel} />
         <MenuGrid />
-        <FooterMini />
       </div>
     </>
   );
@@ -158,10 +155,7 @@ function Header() {
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <LanguageSwitcher compact />
-        <AuthButton />
-      </div>
+      <HomeDrawerMenu />
     </header>
   );
 }
@@ -344,33 +338,5 @@ function YuzuCoin() {
       }}
       aria-hidden
     />
-  );
-}
-
-function FooterMini() {
-  return (
-    <footer className="px-5 pt-3 pb-6 flex flex-col gap-2 text-center">
-      <p className="text-[11px] font-semibold text-sb-ink-3 leading-relaxed">
-        <T k="home.footer.brand" />
-      </p>
-      <p className="text-[10.5px] font-semibold text-sb-ink-3 leading-relaxed opacity-80">
-        <T k="home.footer.disclaimer" />
-      </p>
-      <BusinessInfoPanel compact />
-      <div className="flex items-center justify-center gap-3 text-[10.5px] font-extrabold text-sb-ink-3">
-        <Link href="/terms" className="underline underline-offset-2">
-          <T k="common.terms" />
-        </Link>
-        <Link href="/privacy" className="underline underline-offset-2">
-          <T k="common.privacy" />
-        </Link>
-        <Link href="/refund" className="underline underline-offset-2">
-          <T k="common.refund" />
-        </Link>
-      </div>
-      <p className="text-[10px] text-sb-ink-3 opacity-60">
-        © {new Date().getFullYear()} barasaju
-      </p>
-    </footer>
   );
 }
