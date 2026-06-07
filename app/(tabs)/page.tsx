@@ -289,6 +289,63 @@ function MenuGrid() {
         html[lang="en"] .sb-banner-copy {
           display: flex;
         }
+
+        .sb-banner-copy {
+          letter-spacing: 0;
+        }
+
+        .sb-banner-copy-card {
+          color: var(--sb-banner-text);
+          text-shadow: 0 1px 0 rgba(255, 253, 245, 0.58);
+        }
+
+        .sb-banner-rule {
+          display: flex;
+          width: 58%;
+          align-items: center;
+          gap: 5px;
+          color: var(--sb-banner-text);
+          opacity: 0.46;
+        }
+
+        .sb-banner-rule::before,
+        .sb-banner-rule::after {
+          content: "";
+          height: 1px;
+          flex: 1;
+          background: currentColor;
+        }
+
+        .sb-banner-rule-mark {
+          position: relative;
+          width: 8px;
+          height: 8px;
+          border: 1px solid currentColor;
+          border-radius: 999px;
+        }
+
+        .sb-banner-rule-mark::before {
+          content: "";
+          position: absolute;
+          left: 50%;
+          top: -4px;
+          width: 1px;
+          height: 14px;
+          transform: translateX(-50%);
+          background: currentColor;
+          opacity: 0.72;
+        }
+
+        .sb-banner-title {
+          font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+          font-size: 25px;
+          font-weight: 700;
+          line-height: 0.78;
+        }
+
+        .sb-banner-title span {
+          white-space: nowrap;
+        }
       `}</style>
       <div className="text-[10.5px] font-extrabold text-sb-ink-3 tracking-[0.18em] uppercase mb-1">
         <T k="home.menu.eyebrow" />
@@ -331,26 +388,29 @@ function MenuCard({ item }: { item: MenuItem }) {
         aria-hidden
       >
         {item.bannerCopyEn && (
-          <div className="sb-banner-copy absolute left-[10.5%] top-[8%] h-[80%] w-[46%] items-center justify-center">
+          <div className="sb-banner-copy absolute left-[10.5%] top-[9%] h-[77%] w-[46%] items-center justify-center">
             <div
-              className="relative flex h-full w-full flex-col items-center justify-between rounded-[10px] px-2.5 py-4 text-center"
+              className="sb-banner-copy-card relative flex h-full w-full flex-col items-center justify-center rounded-[12px] px-2.5 py-4 text-center"
               style={{
-                background: "rgba(255, 249, 229, 0.9)",
-                border: "1px solid var(--sb-banner-border)",
-                boxShadow:
-                  "inset 0 0 0 1px rgba(255,255,255,0.58), 0 10px 22px rgba(91,74,54,0.08)",
-                color: "var(--sb-banner-text)",
+                background:
+                  "linear-gradient(180deg, rgba(255, 250, 232, 0.12), rgba(255, 246, 222, 0.18))",
               }}
             >
-              <span className="text-[7px] font-extrabold leading-tight">
+              <span className="sb-banner-rule mb-1" aria-hidden>
+                <span className="sb-banner-rule-mark" />
+              </span>
+              <span className="text-[6.5px] font-extrabold leading-tight opacity-80">
                 {item.bannerCopyEn.eyebrow}
               </span>
-              <span className="flex flex-col items-center text-[20px] font-black leading-[0.92]">
+              <span className="sb-banner-title mt-3 flex flex-col items-center">
                 <span>{item.bannerCopyEn.title[0]}</span>
                 <span>{item.bannerCopyEn.title[1]}</span>
               </span>
-              <span className="text-[8px] font-bold leading-tight opacity-75">
+              <span className="mt-3 text-[7.5px] font-bold leading-tight opacity-72">
                 {item.bannerCopyEn.caption}
+              </span>
+              <span className="sb-banner-rule mt-1" aria-hidden>
+                <span className="sb-banner-rule-mark" />
               </span>
             </div>
           </div>
