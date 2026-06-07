@@ -27,6 +27,10 @@ export const ELEMENT_LABEL_KR: Record<Element, string> = {
   wood: "목", fire: "화", earth: "토", metal: "금", water: "수",
 };
 
+export const ELEMENT_LABEL_EN: Record<Element, string> = {
+  wood: "Wood", fire: "Fire", earth: "Earth", metal: "Metal", water: "Water",
+};
+
 export const ELEMENT_NAME_KR: Record<Element, string> = {
   wood: "나무", fire: "불", earth: "흙", metal: "쇠", water: "물",
 };
@@ -34,6 +38,10 @@ export const ELEMENT_NAME_KR: Record<Element, string> = {
 // 오행 전통 색 — wood=청(푸른), fire=적(붉은), earth=황(황금), metal=백(하얀), water=흑(검은)
 export const ELEMENT_COLOR_KR: Record<Element, string> = {
   wood: "푸른", fire: "붉은", earth: "황금", metal: "하얀", water: "검은",
+};
+
+export const ELEMENT_COLOR_EN: Record<Element, string> = {
+  wood: "Green", fire: "Red", earth: "Yellow", metal: "White", water: "Black",
 };
 
 export const ELEMENT_EMOJI: Record<Element, string> = {
@@ -44,6 +52,12 @@ export const BRANCH_LABEL_KR: Record<Branch, string> = {
   rat: "쥐", ox: "소", tiger: "호랑이", rabbit: "토끼",
   dragon: "용", snake: "뱀", horse: "말", goat: "양",
   monkey: "원숭이", rooster: "닭", dog: "개", pig: "돼지",
+};
+
+export const BRANCH_LABEL_EN: Record<Branch, string> = {
+  rat: "Rat", ox: "Ox", tiger: "Tiger", rabbit: "Rabbit",
+  dragon: "Dragon", snake: "Snake", horse: "Horse", goat: "Goat",
+  monkey: "Monkey", rooster: "Rooster", dog: "Dog", pig: "Pig",
 };
 
 export const BRANCH_EMOJI: Record<Branch, string> = {

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import ContentDisclaimer from "@/app/components/ContentDisclaimer";
+import { useI18n } from "@/app/components/LanguageProvider";
+import type { Locale } from "@/app/i18n";
 import {
   MOCK_ENTITLEMENT_COOKIE,
   isScopeUnlocked,
@@ -43,36 +45,134 @@ type PurposeKey =
   | "other";
 
 type TodayFortuneClientProps = {
-  dateLabel: string;
-  lunarLabel: string;
+  dateLabel: Record<Locale, string>;
+  lunarLabel: Record<Locale, string>;
   initialDate?: string;
   initialPurpose?: string;
   initialMemo?: string;
   initialPaid?: boolean;
 };
 
-const PURPOSES: Array<{ key: PurposeKey; label: string; emoji: string; hint: string }> = [
-  { key: "move", label: "이사", emoji: "🏠", hint: "계약·정리·이동 흐름" },
-  { key: "meeting", label: "상견례", emoji: "🤝", hint: "첫인상과 말의 온도" },
-  { key: "interview", label: "면접", emoji: "💼", hint: "표현력과 평가운" },
-  { key: "opening", label: "개업", emoji: "🏪", hint: "시작운과 손님 흐름" },
-  { key: "wedding", label: "결혼", emoji: "💒", hint: "관계 안정과 축하운" },
-  { key: "surgery", label: "수술", emoji: "🏥", hint: "컨디션과 회복 리듬" },
-  { key: "travel", label: "여행", emoji: "✈️", hint: "이동수와 변수" },
-  { key: "contract", label: "계약", emoji: "📝", hint: "문서운과 조건 확인" },
-  { key: "exam", label: "시험", emoji: "📖", hint: "집중력과 실수 방지" },
-  { key: "birth", label: "출산", emoji: "👶", hint: "회복과 가족운" },
-  { key: "reunion", label: "재회연락", emoji: "💌", hint: "감정선과 답장운" },
-  { key: "other", label: "기타", emoji: "📌", hint: "직접 적은 목적 기준" },
+const PURPOSES: Array<{
+  key: PurposeKey;
+  label: string;
+  labelEn: string;
+  emoji: string;
+  hint: string;
+  hintEn: string;
+}> = [
+  { key: "move", label: "이사", labelEn: "Move", emoji: "🏠", hint: "계약·정리·이동 흐름", hintEn: "Contracts, sorting, and movement" },
+  { key: "meeting", label: "상견례", labelEn: "Family meeting", emoji: "🤝", hint: "첫인상과 말의 온도", hintEn: "First impressions and tone" },
+  { key: "interview", label: "면접", labelEn: "Interview", emoji: "💼", hint: "표현력과 평가운", hintEn: "Expression and evaluation" },
+  { key: "opening", label: "개업", labelEn: "Opening", emoji: "🏪", hint: "시작운과 손님 흐름", hintEn: "Launch energy and customer flow" },
+  { key: "wedding", label: "결혼", labelEn: "Wedding", emoji: "💒", hint: "관계 안정과 축하운", hintEn: "Relationship stability and celebration" },
+  { key: "surgery", label: "수술", labelEn: "Surgery", emoji: "🏥", hint: "컨디션과 회복 리듬", hintEn: "Condition and recovery rhythm" },
+  { key: "travel", label: "여행", labelEn: "Travel", emoji: "✈️", hint: "이동수와 변수", hintEn: "Movement and variables" },
+  { key: "contract", label: "계약", labelEn: "Contract", emoji: "📝", hint: "문서운과 조건 확인", hintEn: "Documents and terms" },
+  { key: "exam", label: "시험", labelEn: "Exam", emoji: "📖", hint: "집중력과 실수 방지", hintEn: "Focus and fewer mistakes" },
+  { key: "birth", label: "출산", labelEn: "Birth", emoji: "👶", hint: "회복과 가족운", hintEn: "Recovery and family support" },
+  { key: "reunion", label: "재회연락", labelEn: "Reconnect", emoji: "💌", hint: "감정선과 답장운", hintEn: "Emotional tone and replies" },
+  { key: "other", label: "기타", labelEn: "Other", emoji: "📌", hint: "직접 적은 목적 기준", hintEn: "Based on your memo" },
 ];
 
 const CATEGORY_META = [
-  { key: "love", label: "연애", emoji: "💞" },
-  { key: "work", label: "일", emoji: "🔥" },
-  { key: "money", label: "돈", emoji: "💰" },
-  { key: "health", label: "건강", emoji: "🌿" },
-  { key: "relation", label: "관계", emoji: "👥" },
+  { key: "love", label: "연애", labelEn: "Love", emoji: "💞" },
+  { key: "work", label: "일", labelEn: "Work", emoji: "🔥" },
+  { key: "money", label: "돈", labelEn: "Money", emoji: "💰" },
+  { key: "health", label: "건강", labelEn: "Health", emoji: "🌿" },
+  { key: "relation", label: "관계", labelEn: "Social", emoji: "👥" },
 ] as const;
+
+const TODAY_UI = {
+  ko: {
+    loading: "오늘의 운세를 준비하고 있어요…",
+    noPersonTitle: "먼저 사주 정보를 등록해주세요",
+    noPersonBody: "오늘의 운세는 저장된 사람을 기준으로 매일 무료로 볼 수 있어요.",
+    noPersonCta: "내 사주 등록하기",
+    manage: "관리",
+    pickTitle: "다른 하루가 궁금하다면",
+    price: "1일 990원",
+    pickDescription: "목적을 고르면 그 날짜를 “그 일에 써도 괜찮은지” 중심으로 봐드릴게요.",
+    memoLabel: "목적 메모",
+    memoPlaceholder: "{purpose} 관련해서 보고 싶은 내용을 적어주세요",
+    dateLabel: "볼 날짜",
+    paidCta: "열어둔 이 날 운세 자세히 보기",
+    lockedCta: "990원으로 이 날 운세 보기",
+    deeperEyebrow: "더 깊게 보고 싶다면",
+    fullReportTitle: "{name}님의 사주바라 전체 해설",
+    fullReportBody: "성격·재물·관계·그림자 카드까지 한 번에 정리해요.",
+    fullReportCta: "사주바라 전체 해설 열기",
+    fullReportCheckout: "사주바라 전체 해설",
+    todayFree: "오늘 무료",
+    todayScore: "오늘의 점수",
+    todayFlow: "오늘의 세부 흐름",
+    paidDetailScore: "이 날의 세부 점수",
+    paidReportEyebrow: "지정일 운세 리포트",
+    otherDate: "다른 날짜",
+    paidHeroTitle: "{purpose} 기준으로 보는\n이 날의 운세",
+    paidHeroBody: "오늘의 무료 운세와 섞지 않고, 결제한 날짜의 판단·시간대·주의 변수만 모아 정리했어요.",
+    paidScore: "이 날의 점수",
+    calendarEyebrow: "열어둔 날짜",
+    calendarTitle: "{year}년 {month}월 지정일",
+    paidComplete: "결제 완료",
+    calendarBody: "결제한 날짜만 점수와 상세 해설이 열려요. 다른 날짜는 새로 선택해서 볼 수 있습니다.",
+    paidResultTitle: "결제한 날짜 상세 해설",
+    opened: "열림",
+    conclusion: "이 날의 결론",
+    timeline: "시간대별 사용법",
+    doTitle: "하면 좋은 것",
+    avoidTitle: "피할 것",
+    checklistTitle: "실행 체크리스트",
+    morePaidEyebrow: "지정일 운세 더 보기",
+    morePaidTitle: "다른 날짜도 목적별로 볼 수 있어요",
+    morePaidBody: "계약·면접·여행처럼 목적을 바꾸면 같은 날도 판단 기준이 달라져요.",
+    morePaidCta: "날짜와 목적 다시 고르기",
+  },
+  en: {
+    loading: "Preparing today’s fortune...",
+    noPersonTitle: "Register a saju profile first",
+    noPersonBody: "Today’s fortune is free each day for a saved person.",
+    noPersonCta: "Register my saju",
+    manage: "Manage",
+    pickTitle: "Curious about another day?",
+    price: "990 won per day",
+    pickDescription: "Choose a purpose and we’ll read whether that date fits the event.",
+    memoLabel: "Purpose memo",
+    memoPlaceholder: "Tell us what you want to check for {purpose}",
+    dateLabel: "Date to read",
+    paidCta: "Open this unlocked day",
+    lockedCta: "Read this day for 990 won",
+    deeperEyebrow: "For a deeper reading",
+    fullReportTitle: "{name}’s full Sajubara reading",
+    fullReportBody: "Personality, money, relationships, and shadow cards in one report.",
+    fullReportCta: "Open full Sajubara reading",
+    fullReportCheckout: "Full Sajubara reading",
+    todayFree: "Free today",
+    todayScore: "Today’s score",
+    todayFlow: "Today’s detailed flow",
+    paidDetailScore: "Detailed score for this day",
+    paidReportEyebrow: "Date-specific fortune report",
+    otherDate: "Other date",
+    paidHeroTitle: "This day’s fortune\nfor {purpose}",
+    paidHeroBody: "This separates the paid date from the free daily reading and focuses on timing, judgment, and watch-outs.",
+    paidScore: "Score for this day",
+    calendarEyebrow: "Unlocked date",
+    calendarTitle: "{month} {year}",
+    paidComplete: "Paid",
+    calendarBody: "Only the paid date opens with its score and full reading. Choose another date to read a different day.",
+    paidResultTitle: "Paid date details",
+    opened: "Open",
+    conclusion: "Bottom line",
+    timeline: "How to use each time block",
+    doTitle: "Helpful actions",
+    avoidTitle: "Avoid",
+    checklistTitle: "Checklist",
+    morePaidEyebrow: "More date readings",
+    morePaidTitle: "You can read other dates by purpose too",
+    morePaidBody: "A contract, interview, or trip can change how the same date should be judged.",
+    morePaidCta: "Choose date and purpose again",
+  },
+} as const;
 
 export default function TodayFortuneClient({
   dateLabel,
@@ -82,6 +182,8 @@ export default function TodayFortuneClient({
   initialMemo,
   initialPaid = false,
 }: TodayFortuneClientProps) {
+  const { locale } = useI18n();
+  const ui = TODAY_UI[locale];
   const [people, setPeople] = useState<Person[]>([]);
   const [selectedId, setSelected] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -104,8 +206,8 @@ export default function TodayFortuneClient({
   const selected = people.find((p) => p.id === selectedId) ?? people[0] ?? null;
   const todayISO = useMemo(() => kstDateISO(), []);
   const todayFortune = useMemo(
-    () => (selected ? buildDailyFortune(selected, todayISO, "other", "") : null),
-    [selected, todayISO],
+    () => (selected ? buildDailyFortune(selected, todayISO, "other", "", locale) : null),
+    [locale, selected, todayISO],
   );
   const targetPurpose = PURPOSES.find((item) => item.key === purpose) ?? PURPOSES[0];
   const targetProduct = selected
@@ -113,8 +215,8 @@ export default function TodayFortuneClient({
     : "";
   const targetUnlocked = hasPaidTarget || initialPaid;
   const targetFortune = useMemo(
-    () => (selected ? buildDailyFortune(selected, targetDate, purpose, memo) : null),
-    [memo, purpose, selected, targetDate],
+    () => (selected ? buildDailyFortune(selected, targetDate, purpose, memo, locale) : null),
+    [locale, memo, purpose, selected, targetDate],
   );
   const hasTargetQuery = Boolean(initialDate || initialPurpose || initialMemo);
   const inPaidDayMode = Boolean(targetFortune && targetUnlocked && hasTargetQuery);
@@ -143,7 +245,7 @@ export default function TodayFortuneClient({
   if (!hydrated) {
     return (
       <div className="flex-1 overflow-y-auto px-4 pt-4">
-        <EmptyCard text="오늘의 운세를 준비하고 있어요…" />
+        <EmptyCard text={ui.loading} />
       </div>
     );
   }
@@ -159,10 +261,10 @@ export default function TodayFortuneClient({
             🛁
           </div>
           <h1 className="text-[22px] font-extrabold text-sb-ink">
-            먼저 사주 정보를 등록해주세요
+            {ui.noPersonTitle}
           </h1>
           <p className="mt-3 text-[13px] font-semibold leading-relaxed text-sb-ink-2">
-            오늘의 운세는 저장된 사람을 기준으로 매일 무료로 볼 수 있어요.
+            {ui.noPersonBody}
           </p>
           <Link
             href="/saju"
@@ -173,7 +275,7 @@ export default function TodayFortuneClient({
               boxShadow: "var(--shadow-sb-pop)",
             }}
           >
-            내 사주 등록하기
+            {ui.noPersonCta}
           </Link>
         </section>
       </div>
@@ -188,6 +290,7 @@ export default function TodayFortuneClient({
         purpose={targetPurpose}
         date={targetDate}
         memo={memo}
+        locale={locale}
       />
     );
   }
@@ -220,19 +323,20 @@ export default function TodayFortuneClient({
           className="shrink-0 rounded-full bg-sb-paper px-3.5 py-2 text-[12px] font-extrabold text-sb-ink-3"
           style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
         >
-          관리
+          {ui.manage}
         </Link>
       </section>
 
       {todayFortune && (
         <TodayHero
           fortune={todayFortune}
-          dateLabel={dateLabel}
-          lunarLabel={lunarLabel}
+          dateLabel={dateLabel[locale]}
+          lunarLabel={lunarLabel[locale]}
+          locale={locale}
         />
       )}
 
-      {todayFortune && <ScorePanel scores={todayFortune.scores} />}
+      {todayFortune && <ScorePanel scores={todayFortune.scores} locale={locale} />}
 
       {todayFortune && (
         <section className="mt-3 grid gap-2">
@@ -263,15 +367,15 @@ export default function TodayFortuneClient({
               Pick a Day
             </p>
             <h2 className="mt-1 text-[20px] font-extrabold leading-tight text-sb-ink">
-              다른 하루가 궁금하다면
+              {ui.pickTitle}
             </h2>
           </div>
           <span className="rounded-full bg-sb-cream px-2.5 py-1 text-[11px] font-extrabold text-sb-olive-dark">
-            1일 990원
+            {ui.price}
           </span>
         </div>
         <p className="mt-2 text-[12.5px] font-semibold leading-relaxed text-sb-ink-2">
-          목적을 고르면 그 날짜를 “그 일에 써도 괜찮은지” 중심으로 봐드릴게요.
+          {ui.pickDescription}
         </p>
 
         <div className="mt-4 grid grid-cols-3 gap-2">
@@ -291,7 +395,7 @@ export default function TodayFortuneClient({
                     : "inset 0 0 0 1px var(--sb-hairline)",
                 }}
               >
-                <span aria-hidden>{item.emoji}</span> {item.label}
+                <span aria-hidden>{item.emoji}</span> {purposeLabel(item, locale)}
               </button>
             );
           })}
@@ -299,12 +403,14 @@ export default function TodayFortuneClient({
 
         <label className="mt-4 block">
           <span className="text-[12px] font-extrabold text-sb-ink-2">
-            목적 메모
+            {ui.memoLabel}
           </span>
           <textarea
             value={memo}
             onChange={(event) => setMemo(event.target.value.slice(0, 160))}
-            placeholder={`${targetPurpose.label} 관련해서 보고 싶은 내용을 적어주세요`}
+            placeholder={interpolateUi(ui.memoPlaceholder, {
+              purpose: purposeLabel(targetPurpose, locale),
+            })}
             className="mt-2 min-h-[86px] w-full resize-none rounded-sb-md bg-sb-cream px-3.5 py-3 text-[14px] font-semibold text-sb-ink outline-none"
             style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
           />
@@ -315,7 +421,7 @@ export default function TodayFortuneClient({
 
         <label className="mt-3 block">
           <span className="text-[12px] font-extrabold text-sb-ink-2">
-            볼 날짜
+            {ui.dateLabel}
           </span>
           <input
             type="date"
@@ -333,7 +439,7 @@ export default function TodayFortuneClient({
               ? buildReturnTo({ date: targetDate, purpose, memo })
               : reportCheckoutHref({
                   product: targetProduct,
-                  title: `${formatDateShort(targetDate)} ${targetPurpose.label} 운세`,
+                  title: dailyCheckoutTitle(targetDate, targetPurpose, locale),
                   amount: 990,
                   returnTo: buildReturnTo({ date: targetDate, purpose, memo }),
                 })
@@ -345,7 +451,7 @@ export default function TodayFortuneClient({
             boxShadow: "0 4px 14px rgba(216,154,42,0.36)",
           }}
         >
-          {targetUnlocked ? "열어둔 이 날 운세 자세히 보기" : "990원으로 이 날 운세 보기"}
+          {targetUnlocked ? ui.paidCta : ui.lockedCta}
         </Link>
       </section>
 
@@ -353,6 +459,7 @@ export default function TodayFortuneClient({
         <PaidDailyResult
           fortune={targetFortune}
           memo={memo}
+          locale={locale}
         />
       )}
 
@@ -363,24 +470,24 @@ export default function TodayFortuneClient({
         style={{ boxShadow: "var(--shadow-sb-card), inset 0 0 0 1px rgba(91,74,54,0.06)" }}
       >
         <p className="text-[11px] font-extrabold text-sb-ink-3">
-          더 깊게 보고 싶다면
+          {ui.deeperEyebrow}
         </p>
         <h2 className="mt-1 text-[18px] font-extrabold text-sb-ink">
-          {selected.input.name}님의 사주바라 전체 해설
+          {interpolateUi(ui.fullReportTitle, { name: selected.input.name })}
         </h2>
         <p className="mt-1 text-[12px] font-semibold text-sb-ink-2">
-          성격·재물·관계·그림자 카드까지 한 번에 정리해요.
+          {ui.fullReportBody}
         </p>
         <Link
           href={reportCheckoutHref({
             product: `saju:${sajuPersonKey(selected.input)}`,
-            title: "사주바라 전체 해설",
+            title: ui.fullReportCheckout,
             amount: 990,
             returnTo: reportSajuHref(selected.input, true),
           })}
           className="mt-3 flex h-11 w-full items-center justify-center rounded-full bg-sb-olive text-[13px] font-extrabold text-white"
         >
-          사주바라 전체 해설 열기
+          {ui.fullReportCta}
         </Link>
       </section>
     </div>
@@ -391,12 +498,15 @@ function TodayHero({
   fortune,
   dateLabel,
   lunarLabel,
+  locale,
 }: {
   fortune: DailyFortune;
   dateLabel: string;
   lunarLabel: string;
+  locale: Locale;
 }) {
-  const headline = splitTodayHeadline(fortune.headline);
+  const ui = TODAY_UI[locale];
+  const headline = splitTodayHeadline(fortune.headline, locale);
 
   return (
     <section
@@ -417,7 +527,7 @@ function TodayHero({
           </p>
         </div>
         <span className="shrink-0 rounded-full bg-sb-paper px-2.5 py-1 text-[11px] font-extrabold text-sb-olive-dark">
-          오늘 무료
+          {ui.todayFree}
         </span>
       </div>
 
@@ -438,7 +548,7 @@ function TodayHero({
       <div className="mt-5 flex items-end justify-between">
         <div>
           <p className="text-[11px] font-extrabold text-sb-ink-3">
-            오늘의 점수
+            {ui.todayScore}
           </p>
           <div className="mt-1 flex items-baseline gap-1">
             <span className="text-[44px] font-black leading-none text-sb-olive-dark">
@@ -457,8 +567,10 @@ function TodayHero({
   );
 }
 
-function splitTodayHeadline(headline: string): { subject: string; main: string } {
-  const match = headline.match(/^(.+?님),\s*(.+)$/);
+function splitTodayHeadline(headline: string, locale: Locale): { subject: string; main: string } {
+  const match = locale === "ko"
+    ? headline.match(/^(.+?님),\s*(.+)$/)
+    : headline.match(/^(.+?),\s*(.+)$/);
   if (!match) return { subject: "", main: headline };
   return { subject: match[1], main: match[2] };
 }
@@ -469,13 +581,20 @@ function FocusedPaidDailyView({
   purpose,
   date,
   memo,
+  locale,
 }: {
   person: Person;
   fortune: DailyFortune;
   purpose: (typeof PURPOSES)[number];
   date: string;
   memo: string;
+  locale: Locale;
 }) {
+  const ui = TODAY_UI[locale];
+  const [heroLine1, heroLine2] = interpolateUi(ui.paidHeroTitle, {
+    purpose: purposeLabel(purpose, locale),
+  }).split("\n");
+
   return (
     <div className="flex-1 overflow-y-auto px-4 pt-3 pb-8">
       <section
@@ -489,10 +608,10 @@ function FocusedPaidDailyView({
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-sb-olive-dark">
-              지정일 운세 리포트
+              {ui.paidReportEyebrow}
             </p>
             <p className="mt-1 text-[12px] font-bold text-sb-ink-3">
-              {person.input.name}님 · {formatDateShort(date)}
+              {personLabel(person.input.name, locale)} · {formatDateShort(date, locale)}
             </p>
           </div>
           <Link
@@ -500,17 +619,17 @@ function FocusedPaidDailyView({
             className="shrink-0 rounded-full bg-white/60 px-3 py-1.5 text-[11px] font-extrabold text-sb-ink-2"
             style={{ boxShadow: "inset 0 0 0 1px rgba(91,74,54,0.08)" }}
           >
-            다른 날짜
+            {ui.otherDate}
           </Link>
         </div>
 
         <h1 className="mt-5 break-keep text-[25px] font-black leading-[1.18] text-sb-ink">
-          {purpose.emoji} {purpose.label} 기준으로 보는
+          {purpose.emoji} {heroLine1}
           <br />
-          이 날의 운세
+          {heroLine2}
         </h1>
         <p className="mt-3 break-keep text-[13px] font-semibold leading-relaxed text-sb-ink-2">
-          오늘의 무료 운세와 섞지 않고, 결제한 날짜의 판단·시간대·주의 변수만 모아 정리했어요.
+          {ui.paidHeroBody}
         </p>
         {memo.trim() && (
           <p className="mt-4 rounded-sb-md bg-white/55 px-3.5 py-3 text-[13px] font-bold leading-relaxed text-sb-ink-2">
@@ -520,7 +639,7 @@ function FocusedPaidDailyView({
         <div className="mt-5 flex items-end justify-between">
           <div>
             <p className="text-[11px] font-extrabold text-sb-ink-3">
-              이 날의 점수
+              {ui.paidScore}
             </p>
             <div className="mt-1 flex items-baseline gap-1">
               <span className="text-[46px] font-black leading-none text-sb-olive-dark">
@@ -537,11 +656,12 @@ function FocusedPaidDailyView({
         </div>
       </section>
 
-      <PaidDayCalendar date={date} score={fortune.total} />
-      <ScorePanel scores={fortune.scores} title="이 날의 세부 점수" />
+      <PaidDayCalendar date={date} score={fortune.total} locale={locale} />
+      <ScorePanel scores={fortune.scores} title={ui.paidDetailScore} locale={locale} />
       <PaidDailyResult
         fortune={fortune}
         memo={memo}
+        locale={locale}
       />
 
       <section
@@ -549,19 +669,19 @@ function FocusedPaidDailyView({
         style={{ boxShadow: "var(--shadow-sb-card), inset 0 0 0 1px rgba(91,74,54,0.06)" }}
       >
         <p className="text-[11px] font-extrabold text-sb-ink-3">
-          지정일 운세 더 보기
+          {ui.morePaidEyebrow}
         </p>
         <h2 className="mt-1 text-[18px] font-extrabold text-sb-ink">
-          다른 날짜도 목적별로 볼 수 있어요
+          {ui.morePaidTitle}
         </h2>
         <p className="mt-1 text-[12px] font-semibold leading-relaxed text-sb-ink-2">
-          계약·면접·여행처럼 목적을 바꾸면 같은 날도 판단 기준이 달라져요.
+          {ui.morePaidBody}
         </p>
         <Link
           href="/today"
           className="mt-3 flex h-11 w-full items-center justify-center rounded-full bg-sb-olive text-[13px] font-extrabold text-white"
         >
-          날짜와 목적 다시 고르기
+          {ui.morePaidCta}
         </Link>
       </section>
 
@@ -570,7 +690,16 @@ function FocusedPaidDailyView({
   );
 }
 
-function PaidDayCalendar({ date, score }: { date: string; score: number }) {
+function PaidDayCalendar({
+  date,
+  score,
+  locale,
+}: {
+  date: string;
+  score: number;
+  locale: Locale;
+}) {
+  const ui = TODAY_UI[locale];
   const days = buildCalendarDays(date, score);
   const [year, month] = date.split("-").map(Number);
 
@@ -582,21 +711,24 @@ function PaidDayCalendar({ date, score }: { date: string; score: number }) {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-sb-ink-3">
-            열어둔 날짜
+            {ui.calendarEyebrow}
           </p>
           <h2 className="mt-1 text-[18px] font-extrabold text-sb-ink">
-            {year}년 {month}월 지정일
+            {interpolateUi(ui.calendarTitle, {
+              year,
+              month: locale === "ko" ? month : monthName(month),
+            })}
           </h2>
         </div>
         <span className="rounded-full bg-sb-cream px-2.5 py-1 text-[11px] font-extrabold text-sb-olive-dark">
-          결제 완료
+          {ui.paidComplete}
         </span>
       </div>
       <p className="mt-2 text-[12px] font-semibold leading-relaxed text-sb-ink-3">
-        결제한 날짜만 점수와 상세 해설이 열려요. 다른 날짜는 새로 선택해서 볼 수 있습니다.
+        {ui.calendarBody}
       </p>
       <div className="mt-4 grid grid-cols-7 gap-1.5 text-center">
-        {["일", "월", "화", "수", "목", "금", "토"].map((day) => (
+        {weekdayLabels(locale).map((day) => (
           <div key={day} className="text-[10px] font-extrabold text-sb-ink-3">
             {day}
           </div>
@@ -620,7 +752,7 @@ function PaidDayCalendar({ date, score }: { date: string; score: number }) {
                 {cell.selected && <span className="text-[10px]">✓</span>}
               </div>
               <div className="mt-2 text-right text-[12px] font-black">
-                {cell.selected ? `${cell.score}점` : "?"}
+                {cell.selected ? scoreLabel(cell.score, locale) : "?"}
               </div>
             </div>
           );
@@ -675,18 +807,22 @@ function buildCalendarDays(date: string, score: number): CalendarCell[] {
 
 function ScorePanel({
   scores,
-  title = "오늘의 세부 흐름",
+  title,
+  locale,
 }: {
   scores: DailyFortune["scores"];
   title?: string;
+  locale: Locale;
 }) {
+  const panelTitle = title ?? TODAY_UI[locale].todayFlow;
+
   return (
     <section
       className="mt-3 rounded-sb-xl bg-sb-paper px-4 py-4"
       style={{ boxShadow: "var(--shadow-sb-card), inset 0 0 0 1px rgba(91,74,54,0.06)" }}
     >
       <h2 className="text-[14px] font-extrabold text-sb-ink">
-        {title}
+        {panelTitle}
       </h2>
       <div className="mt-3 grid gap-2.5">
         {CATEGORY_META.map((item) => {
@@ -694,7 +830,7 @@ function ScorePanel({
           return (
             <div key={item.key} className="grid grid-cols-[58px_1fr_32px] items-center gap-2">
               <div className="text-[12px] font-extrabold text-sb-ink-2">
-                <span aria-hidden>{item.emoji}</span> {item.label}
+                <span aria-hidden>{item.emoji}</span> {categoryLabel(item, locale)}
               </div>
               <div className="h-2.5 rounded-full bg-sb-cream overflow-hidden">
                 <div
@@ -728,10 +864,14 @@ function ScorePanel({
 function PaidDailyResult({
   fortune,
   memo,
+  locale,
 }: {
   fortune: DailyFortune;
   memo: string;
+  locale: Locale;
 }) {
+  const ui = TODAY_UI[locale];
+
   return (
     <section
       className="mt-4 rounded-sb-xl bg-sb-paper px-4 py-4"
@@ -743,11 +883,11 @@ function PaidDailyResult({
             Paid Day Report
           </p>
           <h2 className="mt-1 text-[19px] font-extrabold leading-tight text-sb-ink">
-            결제한 날짜 상세 해설
+            {ui.paidResultTitle}
           </h2>
         </div>
         <span className="rounded-full bg-sb-cream px-2.5 py-1 text-[11px] font-extrabold text-sb-olive-dark">
-          열림
+          {ui.opened}
         </span>
       </div>
       {memo.trim() && (
@@ -758,7 +898,7 @@ function PaidDailyResult({
       <div className="mt-3 grid gap-2.5">
         <article className="rounded-sb-md bg-sb-cream px-3.5 py-3">
           <h3 className="text-[13px] font-extrabold text-sb-ink">
-            이 날의 결론
+            {ui.conclusion}
           </h3>
           <p className="mt-2 text-[13px] font-semibold leading-relaxed text-sb-ink-2">
             {fortune.paidReading}
@@ -766,7 +906,7 @@ function PaidDailyResult({
         </article>
         <article className="rounded-sb-md bg-white px-3.5 py-3" style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}>
           <h3 className="text-[13px] font-extrabold text-sb-ink">
-            시간대별 사용법
+            {ui.timeline}
           </h3>
           <div className="mt-3 grid gap-2">
             {fortune.paidTimeline.map((item) => (
@@ -804,7 +944,7 @@ function PaidDailyResult({
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           <article className="rounded-sb-md bg-white px-3.5 py-3" style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}>
             <h3 className="text-[13px] font-extrabold text-sb-ink">
-              하면 좋은 것
+              {ui.doTitle}
             </h3>
             <ul className="mt-2 grid gap-1.5 text-[12.5px] font-semibold leading-relaxed text-sb-ink-2">
               {fortune.paidDo.map((item) => (
@@ -817,7 +957,7 @@ function PaidDailyResult({
           </article>
           <article className="rounded-sb-md bg-white px-3.5 py-3" style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}>
             <h3 className="text-[13px] font-extrabold text-sb-ink">
-              피할 것
+              {ui.avoidTitle}
             </h3>
             <ul className="mt-2 grid gap-1.5 text-[12.5px] font-semibold leading-relaxed text-sb-ink-2">
               {fortune.paidAvoid.map((item) => (
@@ -831,7 +971,7 @@ function PaidDailyResult({
         </div>
         <article className="rounded-sb-md bg-white px-3.5 py-3" style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}>
           <h3 className="text-[13px] font-extrabold text-sb-ink">
-            실행 체크리스트
+            {ui.checklistTitle}
           </h3>
           <ul className="mt-2 grid gap-1.5 text-[13px] font-semibold leading-relaxed text-sb-ink-2">
             {fortune.paidChecklist.map((item) => (
@@ -875,6 +1015,17 @@ type DailyFortune = {
 };
 
 function buildDailyFortune(
+  person: Person,
+  date: string,
+  purpose: PurposeKey,
+  memo: string,
+  locale: Locale,
+): DailyFortune {
+  if (locale === "en") return buildDailyFortuneEn(person, date, purpose, memo);
+  return buildDailyFortuneKo(person, date, purpose, memo);
+}
+
+function buildDailyFortuneKo(
   person: Person,
   date: string,
   purpose: PurposeKey,
@@ -1121,6 +1272,256 @@ function buildDailyFortune(
   };
 }
 
+function buildDailyFortuneEn(
+  person: Person,
+  date: string,
+  purpose: PurposeKey,
+  memo: string,
+): DailyFortune {
+  const input = person.input;
+  const profile = buildDailyProfile(person, "en");
+  const seed = hash(
+    `${person.cardId}|${input.birthDate}|${input.birthTime}|${input.gender}|${input.loveStatus ?? ""}|${input.jobStatus ?? ""}|${date}|${purpose}|${memo}`,
+  );
+  const profileSeed = hash(`${person.cardId}|${input.birthDate}|${input.birthTime}|${input.gender}`);
+  const total = 72 + ((seed + profileSeed) % 22);
+  const purposeMeta = PURPOSES.find((item) => item.key === purpose) ?? PURPOSES[0];
+  const purposeName = purposeLabel(purposeMeta, "en");
+  const purposeLower = purposeName.toLowerCase();
+  const keyword = pick(
+    [
+      "Clear-up luck",
+      "Focus luck",
+      "Conversation luck",
+      "Recovery luck",
+      "Document luck",
+      "Pace control",
+      "Choice luck",
+      "Observation luck",
+      "Finishing luck",
+      "Promise luck",
+      "Condition luck",
+      "Tidying luck",
+      "Persuasion luck",
+      "Healthy distance",
+    ],
+    seed + profileSeed,
+  );
+  const focus = pick(
+    [
+      `When you lean into ${profile.strength}, it is easier to finish something you have been postponing`,
+      `When ${profile.pace} fits the day, the result gets organized before the words do`,
+      `In matters around ${profile.context}, your judgment becomes clearer later in the day`,
+      `Using ${profile.strength} works better for refining an existing plan than starting a new promise`,
+      `Around ${profile.context}, writing things down is steadier than trying to persuade on the spot`,
+      `With ${profile.pace}, it becomes easier to separate what must be done today from what can wait`,
+      `A small check in the area of ${profile.strength} can prevent a larger mistake`,
+      `For ${profile.context}, resetting the order helps more than forcing speed`,
+    ],
+    seed + 3,
+  );
+  const caution = pick(
+    [
+      `${profile.caution} can make a quick reply sound sharper than intended`,
+      `If ${profile.caution} grows, even a small expense can feel heavier later`,
+      `When ${profile.caution} rises, decisions can blur along with your mood`,
+      `${profile.caution} makes it better not to read the other person’s reaction too quickly`,
+      `When ${profile.caution} shows up, even a good offer needs its conditions checked first`,
+      `At moments when ${profile.caution} gets stronger, check both schedule and energy`,
+    ],
+    seed + 8,
+  );
+  const name = input.name;
+  const headline = pick(
+    [
+      `${name}, ${profile.headlineSignal} stands out first today`,
+      `${name}, your ${profile.shortTrait} brings out ${keyword}`,
+      `${name}, luck becomes clearer during ${profile.timeLens}`,
+      `${name}, take care of ${profile.actionNoun} first today`,
+      `${name}, ${profile.balanceNoun} can change the result`,
+      `${name}, the texture of ${profile.cardName} shows up as ${keyword}`,
+      `${name}, a small win appears around ${profile.context}`,
+      `${name}, this day asks for ${profile.strength}`,
+    ],
+    seed + profileSeed + 17,
+  );
+  const quest = pick(
+    [
+      `Before 2 PM, organize one item related to ${profile.actionNoun}.`,
+      `For anything tied to ${profile.context}, write a short note before sending a message.`,
+      `Set today’s money or time by ${profile.balanceNoun} first, and your mind will settle.`,
+      `Add a 20-minute reset during ${profile.timeLens} to smooth the flow.`,
+      `Pick one task where your ${profile.shortTrait} works well and finish it fully.`,
+      `When ${profile.caution} rises, delay the reply by 10 minutes.`,
+    ],
+    seed + 13,
+  );
+  const memoText = memo.trim();
+  const purposeContext = memoText ? `"${memoText}"` : `your ${purposeLower} plan`;
+  const timing = pick(
+    [
+      `Finish the key check during ${profile.timeLens}, then send final confirmation after one pause.`,
+      "Use the morning to organize materials and terms, then use the afternoon to read people’s reactions.",
+      "Spend the first 30 minutes on preparation and checks, then begin execution once the schedule is tidy.",
+      `If you keep ${profile.pace}, important conditions will stand out before urgent variables do.`,
+    ],
+    seed + 19,
+  );
+  const relationAdvice = pick(
+    [
+      `For people connected to ${profile.context}, explain your conditions and intent in short pieces instead of jumping to the conclusion.`,
+      "If the conversation gets long, the point can blur. Decide the one sentence you want to leave behind first.",
+      "If you need help, ask someone with a clear role rather than the closest person emotionally.",
+    ],
+    seed + 23,
+  );
+  const risk = pick(
+    [
+      `The main variable to watch is ${profile.caution}. If it grows, even good judgment can get rushed.`,
+      "Process matters more than outcome on this day. One unchecked condition can become a late snag.",
+      "Emotional fatigue may arrive sooner than expected. For important talks, leave a record instead of relying on an instant reply.",
+    ],
+    seed + 29,
+  );
+  const finalAdvice = pick(
+    [
+      `${purposeContext} is not a day to avoid completely; the score rises when the preparation order is clear.`,
+      `${purposeContext} fits better when you narrow the key terms instead of making the plan too large.`,
+      `${purposeContext} feels steadier when you judge by a checklist rather than by people’s reactions.`,
+    ],
+    seed + 31,
+  );
+  const action = pick(
+    [
+      `Send important messages around ${profile.timeLens}, and delay the final confirmation one more step.`,
+      `For promises tied to ${profile.context}, choose a calm place where conversation is easy.`,
+      `For a result-bearing event like ${purposeLower}, write three checklist items first.`,
+      `If travel is involved, leave 20 extra minutes and check ${profile.actionNoun} first.`,
+      `Use ${profile.balanceNoun} to split one thing to do today and one thing to postpone.`,
+    ],
+    seed + 21,
+  );
+  const prepAction = pick(
+    [
+      `Gather the documents, supplies, and contacts needed for ${purposeLower} in one place.`,
+      `Write down the three conditions that must hold for ${purposeContext}.`,
+      `Before starting, check ${profile.actionNoun} and separate fixed terms from adjustable ones.`,
+      "If another person is involved, prepare the opening sentence. Short standards work better than improvised explanations today.",
+    ],
+    seed + 33,
+  );
+  const executionAction = pick(
+    [
+      `Handle the core decision during ${profile.timeLens}, and leave secondary choices for later.`,
+      "If a variable appears on site, do not change the conclusion immediately. Compare it with the original purpose first.",
+      `If the conversation gets long, ${profile.balanceNoun} can blur. Ask one checking question first.`,
+      "During execution, avoid adding new options and choose within the criteria already set.",
+    ],
+    seed + 35,
+  );
+  const closingAction = pick(
+    [
+      "Right after finishing, write one line for the decision and one line for the next action.",
+      "Do not judge the result immediately. Recheck messages or conditions after about 30 minutes.",
+      `If ${profile.caution} is still present, schedule the next check instead of adding a same-day confirmation.`,
+      "Even if the result is good, do not expand immediately. Recalculate the next step’s cost and time.",
+    ],
+    seed + 37,
+  );
+
+  return {
+    headline,
+    summary: `${focus}. Still, ${caution}. Today’s luck feels easier when you finish one thing cleanly rather than expanding too much.`,
+    keyword,
+    total,
+    scores: {
+      love: clampScore(total + ((seed >> 2) % 13) - 6),
+      work: clampScore(total + ((seed >> 4) % 15) - 5),
+      money: clampScore(total + ((seed >> 6) % 11) - 6),
+      health: clampScore(total + ((seed >> 8) % 13) - 7),
+      relation: clampScore(total + ((seed >> 10) % 12) - 5),
+    },
+    sections: [
+      {
+        emoji: "✨",
+        title: "Today’s mood",
+        body: `${name}’s ${profile.cardName} texture appears through ${keyword}. One extra check around ${profile.actionNoun} steadies the result more than a fast decision.`,
+      },
+      {
+        emoji: "⚠️",
+        title: "Watch-out",
+        body: caution,
+      },
+      {
+        emoji: "🎯",
+        title: "Today’s quest",
+        body: quest,
+      },
+    ],
+    paidReading: `${formatDateShort(date, "en")} ${purposeLower} fortune scores ${total}/100. For ${purposeContext}, ${focus}. Still, ${caution}. Rather than judging the day as simply good or bad, narrow the preparation order and the conditions to check first. The event can move forward, but spending the first 30 minutes on checks changes how stable the result feels.`,
+    paidTimeline: [
+      {
+        label: "Prep",
+        title: "First 30 min",
+        body: prepAction,
+      },
+      {
+        label: "Action",
+        title: profile.timeLens,
+        body: executionAction,
+      },
+      {
+        label: "Wrap",
+        title: "Right after",
+        body: closingAction,
+      },
+    ],
+    paidSections: [
+      {
+        emoji: "🧭",
+        title: "Decision guide",
+        body: `${finalAdvice}\nThe score is a solid ${total}, but the key is not pushing blindly. For an event like ${purposeLower}, separate “Can I do this today?” from “How much should I finalize today?”`,
+      },
+      {
+        emoji: "⏱",
+        title: "Best timing",
+        body: `${timing}\nIf you start too quickly, details can slip. Use the first step for checking, then place the real action one beat later when possible.`,
+      },
+      {
+        emoji: "💬",
+        title: "People and words",
+        body: `${relationAdvice}\nOn this day, order matters more than word count. If you need to persuade someone, split purpose, terms, and request into separate short sentences.`,
+      },
+      {
+        emoji: "⚠️",
+        title: "Risk variable",
+        body: `${risk}\nFor conditions directly tied to ${purposeContext}, avoid judging them from scratch on the day itself. Recheck them the day before or before the first step.`,
+      },
+      {
+        emoji: "🌿",
+        title: "Balancing action",
+        body: `${action}\nThe most useful luck-opening move today is a record: write what to do, who to check with, and what can wait in three lines.`,
+      },
+    ],
+    paidDo: [
+      prepAction,
+      `Change the success standard for ${purposeLower} from “a good result” to “the conditions that must be confirmed.”`,
+      `During ${profile.timeLens}, avoid adding new work and focus on one core judgment.`,
+    ],
+    paidAvoid: [
+      `Avoid confirming immediately while ${profile.caution} is active.`,
+      `Do not judge all of ${purposeContext} from one person’s reaction.`,
+      "Adding many new conditions on the day itself can blur the flow. Move extra conditions to the next step.",
+    ],
+    paidChecklist: [
+      `Write only three conditions needed for ${purposeLower}, then check what is missing first.`,
+      `During ${profile.timeLens}, review the final sentence or appointment time once more.`,
+      `When ${profile.caution} rises, do not finalize right away. Look again 10 minutes later.`,
+    ],
+    action,
+  };
+}
+
 type DailyProfile = {
   cardName: string;
   shortTrait: string;
@@ -1242,17 +1643,154 @@ const BRANCH_DAILY_PROFILE: Record<Branch, Pick<DailyProfile, "headlineSignal" |
   },
 };
 
-function buildDailyProfile(person: Person): DailyProfile {
+const ELEMENT_COLOR_EN: Record<Element, string> = {
+  wood: "Green",
+  fire: "Red",
+  earth: "Yellow",
+  metal: "White",
+  water: "Black",
+};
+
+const BRANCH_LABEL_EN: Record<Branch, string> = {
+  rat: "Rat",
+  ox: "Ox",
+  tiger: "Tiger",
+  rabbit: "Rabbit",
+  dragon: "Dragon",
+  snake: "Snake",
+  horse: "Horse",
+  goat: "Goat",
+  monkey: "Monkey",
+  rooster: "Rooster",
+  dog: "Dog",
+  pig: "Pig",
+};
+
+const ELEMENT_DAILY_PROFILE_EN: Record<Element, Pick<DailyProfile, "shortTrait" | "strength" | "caution" | "pace">> = {
+  wood: {
+    shortTrait: "fresh organizing sense",
+    strength: "the power to gather scattered thoughts into a new direction",
+    caution: "the urge to start too many things at once",
+    pace: "a rhythm that opens lightly in the first 30 minutes",
+  },
+  fire: {
+    shortTrait: "quick read of reactions",
+    strength: "the power to warm the room and move decisions forward",
+    caution: "emotional temperature rising before the facts settle",
+    pace: "a rhythm that sparks in the morning and refines in the afternoon",
+  },
+  earth: {
+    shortTrait: "realistic sense",
+    strength: "the power to put shaky matters back in place",
+    caution: "staying too long with a familiar method",
+    pace: "a rhythm that gets stronger through slow checks",
+  },
+  metal: {
+    shortTrait: "clear boundary sense",
+    strength: "the power to separate what matters from what can be removed",
+    caution: "short words sounding colder than intended",
+    pace: "a rhythm that moves quickly after setting standards",
+  },
+  water: {
+    shortTrait: "sense for hidden currents",
+    strength: "the power to notice even the atmosphere that is not spoken",
+    caution: "thinking so deeply that timing slips",
+    pace: "a rhythm that steps back briefly to see the whole picture",
+  },
+};
+
+const BRANCH_DAILY_PROFILE_EN: Record<Branch, Pick<DailyProfile, "headlineSignal" | "context" | "actionNoun" | "balanceNoun">> = {
+  rat: {
+    headlineSignal: "the direction of small information",
+    context: "messages and records",
+    actionNoun: "notes and numbers",
+    balanceNoun: "spending and time",
+  },
+  ox: {
+    headlineSignal: "what has been steadily built",
+    context: "existing work and promises",
+    actionNoun: "deadlines and checks",
+    balanceNoun: "speed and stability",
+  },
+  tiger: {
+    headlineSignal: "the choice to move first",
+    context: "new offers and beginnings",
+    actionNoun: "the first step",
+    balanceNoun: "courage and preparation",
+  },
+  rabbit: {
+    headlineSignal: "the temperature of relationships",
+    context: "conversation and relationships",
+    actionNoun: "the order of words",
+    balanceNoun: "care and standards",
+  },
+  dragon: {
+    headlineSignal: "the sense for the bigger board",
+    context: "plans and goals",
+    actionNoun: "priorities",
+    balanceNoun: "expansion and sorting",
+  },
+  snake: {
+    headlineSignal: "hidden conditions",
+    context: "contracts and judgment",
+    actionNoun: "condition checks",
+    balanceNoun: "intuition and evidence",
+  },
+  horse: {
+    headlineSignal: "things gaining speed",
+    context: "movement and schedules",
+    actionNoun: "routes",
+    balanceNoun: "drive and rest",
+  },
+  goat: {
+    headlineSignal: "relationships that tug at the heart",
+    context: "family and close people",
+    actionNoun: "emotional sorting",
+    balanceNoun: "care and depletion",
+  },
+  monkey: {
+    headlineSignal: "fast-changing variables",
+    context: "collaboration and problem solving",
+    actionNoun: "alternatives",
+    balanceNoun: "quickness and focus",
+  },
+  rooster: {
+    headlineSignal: "the difference in details",
+    context: "documents and presentations",
+    actionNoun: "expression and review",
+    balanceNoun: "finish and margin",
+  },
+  dog: {
+    headlineSignal: "promises that must be kept",
+    context: "responsibility and trust",
+    actionNoun: "appointment time",
+    balanceNoun: "loyalty and distance",
+  },
+  pig: {
+    headlineSignal: "a flow that loosens comfortably",
+    context: "rest and recovery",
+    actionNoun: "condition",
+    balanceNoun: "ease and finishing",
+  },
+};
+
+function buildDailyProfile(person: Person, locale: Locale = "ko"): DailyProfile {
   const [rawElement, rawBranch] = person.cardId.split("-");
   const element = isElement(rawElement) ? rawElement : elementFromBirthMonth(person.input.birthDate);
   const branch = isBranch(rawBranch) ? rawBranch : branchFromBirthDate(person.input.birthDate);
-  const elementProfile = ELEMENT_DAILY_PROFILE[element];
-  const branchProfile = BRANCH_DAILY_PROFILE[branch];
+  const elementProfile = locale === "ko"
+    ? ELEMENT_DAILY_PROFILE[element]
+    : ELEMENT_DAILY_PROFILE_EN[element];
+  const branchProfile = locale === "ko"
+    ? BRANCH_DAILY_PROFILE[branch]
+    : BRANCH_DAILY_PROFILE_EN[branch];
   return {
     ...elementProfile,
     ...branchProfile,
-    cardName: `${ELEMENT_COLOR_KR[element]} ${BRANCH_LABEL_KR[branch]}`,
-    timeLens: timeLensFromBirthTime(person.input.birthTime),
+    cardName: locale === "ko"
+      ? `${ELEMENT_COLOR_KR[element]} ${BRANCH_LABEL_KR[branch]}`
+      : `${ELEMENT_COLOR_EN[element]} ${BRANCH_LABEL_EN[branch]}`,
+    timeLens: timeLensFromBirthTime(person.input.birthTime, locale),
   };
 }
 
@@ -1280,7 +1818,26 @@ function branchFromBirthDate(birthDate: string): Branch {
   return BRANCHES[Math.abs(day - 1) % BRANCHES.length];
 }
 
-function timeLensFromBirthTime(birthTime: string): string {
+function timeLensFromBirthTime(birthTime: string, locale: Locale): string {
+  if (locale === "en") {
+    if (birthTime === "자시" || birthTime === "축시" || birthTime === "해시") {
+      return "quiet hours";
+    }
+    if (birthTime === "인시" || birthTime === "묘시" || birthTime === "진시") {
+      return "the early morning";
+    }
+    if (birthTime === "사시" || birthTime === "오시") {
+      return "midday";
+    }
+    if (birthTime === "미시" || birthTime === "신시") {
+      return "the afternoon flow";
+    }
+    if (birthTime === "유시" || birthTime === "술시") {
+      return "around evening";
+    }
+    return "the hours when your condition feels clear";
+  }
+
   if (birthTime === "자시" || birthTime === "축시" || birthTime === "해시") {
     return "조용한 시간대";
   }
@@ -1297,6 +1854,51 @@ function timeLensFromBirthTime(birthTime: string): string {
     return "저녁 전후";
   }
   return "컨디션이 또렷한 시간대";
+}
+
+function purposeLabel(item: (typeof PURPOSES)[number], locale: Locale): string {
+  return locale === "ko" ? item.label : item.labelEn;
+}
+
+function categoryLabel(item: (typeof CATEGORY_META)[number], locale: Locale): string {
+  return locale === "ko" ? item.label : item.labelEn;
+}
+
+function personLabel(name: string, locale: Locale): string {
+  return locale === "ko" ? `${name}님` : name;
+}
+
+function interpolateUi(template: string, vars: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(vars[key] ?? ""));
+}
+
+function dailyCheckoutTitle(
+  date: string,
+  purpose: (typeof PURPOSES)[number],
+  locale: Locale,
+) {
+  if (locale === "ko") {
+    return `${formatDateShort(date, "ko")} ${purposeLabel(purpose, locale)} 운세`;
+  }
+  return `${formatDateShort(date, "en")} ${purposeLabel(purpose, locale)} fortune`;
+}
+
+function weekdayLabels(locale: Locale): string[] {
+  return locale === "ko"
+    ? ["일", "월", "화", "수", "목", "금", "토"]
+    : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+}
+
+function monthName(month: number): string {
+  if (!Number.isFinite(month)) return "";
+  return new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+    new Date(Date.UTC(2026, month - 1, 1)),
+  );
+}
+
+function scoreLabel(score: number | undefined, locale: Locale): string {
+  if (typeof score !== "number") return "?";
+  return locale === "ko" ? `${score}점` : `${score} pts`;
 }
 
 function buildReturnTo({
@@ -1353,9 +1955,15 @@ function nextKstDateISO(): string {
   return kstDateISO(1);
 }
 
-function formatDateShort(value: string): string {
+function formatDateShort(value: string, locale: Locale = "ko"): string {
   const [year, month, day] = value.split("-");
   if (!year || !month || !day) return value;
+  if (locale === "en") {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+    }).format(new Date(Date.UTC(Number(year), Number(month) - 1, Number(day))));
+  }
   return `${Number(month)}월 ${Number(day)}일`;
 }
 

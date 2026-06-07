@@ -1,0 +1,11 @@
+.git
+.next
+node_modules
+coverage
+out
+build
+*.tsbuildinfo
+.DS_Store
+.env*
+!.env.example
+*.pptx

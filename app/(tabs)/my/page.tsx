@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import BaraCardView from "@/app/components/BaraCard";
+import { useI18n } from "@/app/components/LanguageProvider";
+import LanguageSwitcher from "@/app/components/LanguageSwitcher";
+import type { TranslationKey } from "@/app/i18n";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   MOCK_ENTITLEMENT_COOKIE,
@@ -28,7 +31,10 @@ type ReportItem = {
   checkoutHref: string;
 };
 
+type TFunction = (key: TranslationKey, vars?: Record<string, string | number>) => string;
+
 export default function MyPage() {
+  const { t } = useI18n();
   const [people, setPeople] = useState<Person[]>([]);
   const [colorRecords, setColorRecords] = useState<ColorBaraRecord[]>([]);
   const [selectedId, setSelected] = useState<string | null>(null);
@@ -50,7 +56,10 @@ export default function MyPage() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     ) {
       const supabase = createSupabaseBrowserClient();
-      supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+      supabase.auth
+        .getUser()
+        .then(({ data }) => setEmail(data.user?.email ?? null))
+        .catch(() => setEmail(null));
       const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
         setEmail(session?.user.email ?? null);
       });
@@ -67,9 +76,9 @@ export default function MyPage() {
   const reports = useMemo(
     () =>
       selectedPerson
-        ? buildReportItems(selectedPerson.input, entitlements).filter((report) => report.unlocked)
+        ? buildReportItems(selectedPerson.input, entitlements, t).filter((report) => report.unlocked)
         : [],
-    [entitlements, selectedPerson],
+    [entitlements, selectedPerson, t],
   );
   const visibleColorRecords = useMemo(
     () =>
@@ -117,12 +126,15 @@ export default function MyPage() {
         }}
       >
         <div className="flex flex-col leading-none">
-          <span className="text-[19px] font-bold text-sb-olive-dark tracking-tight">보관함</span>
+          <span className="text-[19px] font-bold text-sb-olive-dark tracking-tight">
+            {t("my.title")}
+          </span>
           <span className="text-[10px] font-semibold text-sb-ink-3 mt-[3px] tracking-tight">
-            사람별 카드 · 구매한 리포트
+            {t("my.subtitle")}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex max-w-[230px] flex-wrap items-center justify-end gap-1.5">
+          <LanguageSwitcher compact />
           {email && (
             <button
               type="button"
@@ -131,7 +143,7 @@ export default function MyPage() {
               className="h-9 rounded-full bg-sb-paper px-3 text-[12.5px] font-bold text-sb-ink-2 disabled:opacity-60"
               style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
             >
-              {signingOut ? "나가는 중" : "로그아웃"}
+              {signingOut ? t("my.signingOut") : t("my.signOut")}
             </button>
           )}
           <Link
@@ -139,7 +151,7 @@ export default function MyPage() {
             className="h-9 px-3 rounded-full bg-sb-paper flex items-center text-[12.5px] font-bold text-sb-ink-2"
             style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
           >
-            사주 관리
+            {t("my.managePeople")}
           </Link>
         </div>
       </header>
@@ -156,7 +168,7 @@ export default function MyPage() {
                 {people.length > 1 && (
                   <section>
                     <h2 className="text-[12px] font-extrabold text-sb-olive-light tracking-wider uppercase mb-2 px-1">
-                      저장된 사람
+                      {t("my.savedPeople")}
                     </h2>
                     <div className="flex gap-2 overflow-x-auto pb-1">
                       {people.map((person) => {
@@ -185,12 +197,12 @@ export default function MyPage() {
 
                 <section>
                   <h2 className="text-[12px] font-extrabold text-sb-olive-light tracking-wider uppercase mb-2 px-1">
-                    {selectedPerson.input.name}님의 사주바라 카드
+                    {t("my.sajuCardTitle", { name: selectedPerson.input.name })}
                   </h2>
                   <Link
                     href={buildSajuResultHref(selectedPerson.input)}
                     className="block active:scale-[0.99] transition-transform"
-                    aria-label={`${selectedPerson.input.name}님 사주 결과 다시 보기`}
+                    aria-label={t("my.sajuCardAria", { name: selectedPerson.input.name })}
                   >
                     <BaraCardView
                       card={card}
@@ -200,7 +212,7 @@ export default function MyPage() {
                   </Link>
                   {!isCardWritten(card) && (
                     <p className="text-[11px] text-sb-ink-3 px-1 pt-2 leading-relaxed">
-                      카드 본문이 아직 비어 있어요. 60카드 본문을 채우면 여기에도 반영됩니다.
+                      {t("my.emptyCardBody")}
                     </p>
                   )}
                 </section>
@@ -209,10 +221,10 @@ export default function MyPage() {
                   <section>
                     <div className="mb-2 flex items-center justify-between px-1">
                       <h2 className="text-[12px] font-extrabold text-sb-olive-light tracking-wider uppercase">
-                        구매한 리포트
+                        {t("my.purchasedReports")}
                       </h2>
                       <span className="text-[11px] font-bold text-sb-ink-3">
-                        테스트 결제 기준
+                        {t("my.testPayment")}
                       </span>
                     </div>
                     <div className="flex flex-col gap-2">
@@ -239,7 +251,7 @@ export default function MyPage() {
                   className="rounded-full bg-sb-paper text-sb-ink-2 text-[12.5px] font-bold px-4 py-2.5 text-center flex items-center justify-center"
                   style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
                 >
-                  다른 사람 사주 추가하기
+                  {t("my.addOther")}
                 </Link>
               </section>
             ) : (
@@ -249,7 +261,7 @@ export default function MyPage() {
                   className="rounded-full bg-sb-paper text-sb-ink-2 text-[12.5px] font-bold px-4 py-2.5 text-center flex items-center justify-center"
                   style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
                 >
-                  사주바라 카드도 받아보기
+                  {t("my.getSajuCard")}
                 </Link>
               </section>
             )}
@@ -261,6 +273,8 @@ export default function MyPage() {
 }
 
 function ReportRow({ report }: { report: ReportItem }) {
+  const { t } = useI18n();
+
   return (
     <Link
       href={report.unlocked ? report.href : report.checkoutHref}
@@ -285,7 +299,7 @@ function ReportRow({ report }: { report: ReportItem }) {
               color: report.unlocked ? "white" : "var(--sb-olive-dark)",
             }}
           >
-            {report.unlocked ? "구매완료" : "잠금"}
+            {report.unlocked ? t("my.reportPurchased") : t("my.reportLocked")}
           </span>
         </div>
         <p className="mt-1 text-[11.5px] font-semibold text-sb-ink-3 leading-snug">
@@ -312,14 +326,16 @@ function ColorRecordsSection({
   records: ColorBaraRecord[];
   ownerName?: string;
 }) {
+  const { t } = useI18n();
+
   return (
     <section>
       <div className="mb-2 flex items-center justify-between px-1">
         <h2 className="text-[12px] font-extrabold text-sb-olive-light tracking-wider uppercase">
-          {ownerName ? `${ownerName}님의 컬러바라` : "컬러바라"}
+          {ownerName ? t("my.colorOwnerTitle", { name: ownerName }) : t("my.colorTitle")}
         </h2>
         <span className="text-[11px] font-bold text-sb-ink-3">
-          무료 리포트 {records.length}개
+          {t("my.freeReportCount", { count: records.length })}
         </span>
       </div>
       <div className="flex flex-col gap-2">
@@ -341,21 +357,27 @@ function ColorRecordsSection({
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
                 <h3 className="truncate text-[14px] font-extrabold text-sb-ink tracking-tight">
-                  {record.name}님의 운명 컬러
+                  {t("my.destinyColor", { name: record.name })}
                 </h3>
                 <span
                   className="shrink-0 rounded-full px-1.5 py-[2px] text-[9px] font-extrabold text-sb-olive-dark"
                   style={{ background: "var(--sb-cream)" }}
                 >
-                  저장됨
+                  {t("my.saved")}
                 </span>
               </div>
               <p className="mt-1 line-clamp-2 text-[11.5px] font-semibold text-sb-ink-3 leading-snug">
-                {record.report.cheat.colorKr} 핵심 컬러 · {record.lunarLabel}
+                {t("my.coreColor", { color: record.report.cheat.colorKr })} · {record.lunarLabel}
               </p>
               <div className="mt-2 flex flex-wrap gap-1">
-                <ColorRecordChip label={`소울 ${record.report.soul.colorKr}`} color={record.report.soul.hex} />
-                <ColorRecordChip label={`무대 ${record.report.stage.colorKr}`} color={record.report.stage.hex} />
+                <ColorRecordChip
+                  label={t("my.soulColor", { color: record.report.soul.colorKr })}
+                  color={record.report.soul.hex}
+                />
+                <ColorRecordChip
+                  label={t("my.stageColor", { color: record.report.stage.colorKr })}
+                  color={record.report.stage.hex}
+                />
               </div>
             </div>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
@@ -403,17 +425,21 @@ function ColorRecordChip({ label, color }: { label: string; color: string }) {
 }
 
 function LoadingState() {
+  const { t } = useI18n();
+
   return (
     <div
       className="bg-sb-paper rounded-sb-lg px-4 py-6 text-center text-[13px] text-sb-ink-3"
       style={{ boxShadow: "var(--shadow-sb-card), inset 0 0 0 1px rgba(91,74,54,0.06)" }}
     >
-      불러오는 중…
+      {t("common.loading")}
     </div>
   );
 }
 
 function EmptyState() {
+  const { t } = useI18n();
+
   return (
     <div
       className="bg-sb-paper rounded-sb-lg px-5 py-6 text-center"
@@ -421,17 +447,17 @@ function EmptyState() {
     >
       <div className="text-[40px] mb-2">🌿</div>
       <h3 className="text-[15px] font-extrabold text-sb-ink mb-1.5 tracking-tight">
-        아직 받은 바라 카드가 없어요
+        {t("my.emptyTitle")}
       </h3>
       <p className="text-[12.5px] text-sb-ink-2 leading-relaxed mb-4">
-        사주바라부터 시작해볼까요?
+        {t("my.emptyBody")}
       </p>
       <Link
         href="/saju"
         className="inline-flex items-center gap-1.5 rounded-full bg-sb-olive text-white text-[12.5px] font-bold px-4 py-2.5"
         style={{ boxShadow: "0 2px 6px rgba(92,110,62,0.3)" }}
       >
-        사주바라 시작하기
+        {t("my.emptyCta")}
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
           <path
             d="M3.5 2L6.5 5L3.5 8"
@@ -446,7 +472,11 @@ function EmptyState() {
   );
 }
 
-function buildReportItems(input: SajuInput, entitlements: MockEntitlements): ReportItem[] {
+function buildReportItems(
+  input: SajuInput,
+  entitlements: MockEntitlements,
+  t: TFunction,
+): ReportItem[] {
   const year = currentKstYear();
   const personKey = sajuPersonKey(input);
   const sajuHref = buildSajuResultHref(input, true);
@@ -456,37 +486,37 @@ function buildReportItems(input: SajuInput, entitlements: MockEntitlements): Rep
   return [
     {
       key: "saju",
-      title: "사주바라 전체 해설",
-      desc: "성격·재물·관계·그림자 카드",
+      title: t("my.report.saju.title"),
+      desc: t("my.report.saju.desc"),
       unlocked: isScopeUnlocked(entitlements, { product: "saju", personKey }),
       href: sajuHref,
       checkoutHref: buildCheckoutHref({
         product: sajuPersonProduct(input),
-        title: `${input.name}님 사주바라 전체 해설`,
+        title: t("my.report.saju.checkout", { name: input.name }),
         returnTo: sajuHref,
       }),
     },
     {
       key: "daewoon",
-      title: "현재 10년 대운",
-      desc: "5챕터·10년 세운·시크릿 솔루션",
+      title: t("my.report.daewoon.title"),
+      desc: t("my.report.daewoon.desc"),
       unlocked: isScopeUnlocked(entitlements, { product: "daewoon", period: "current", personKey }),
       href: daewoonHref,
       checkoutHref: buildCheckoutHref({
         product: `daewoon:${personKey}:current`,
-        title: `${input.name}님 현재 대운 상세`,
+        title: t("my.report.daewoon.checkout", { name: input.name }),
         returnTo: daewoonHref,
       }),
     },
     {
       key: "yearly",
-      title: `${year}년 연도별 운세`,
-      desc: "12개월·6대 운세·시크릿 솔루션",
+      title: t("my.report.yearly.title", { year }),
+      desc: t("my.report.yearly.desc"),
       unlocked: isScopeUnlocked(entitlements, { product: "yearly", year, personKey }),
       href: yearlyHref,
       checkoutHref: buildCheckoutHref({
         product: `yearly:${personKey}:${year}`,
-        title: `${input.name}님 ${year}년 전체 해설`,
+        title: t("my.report.yearly.checkout", { name: input.name, year }),
         returnTo: yearlyHref,
       }),
     },

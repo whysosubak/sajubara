@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { loadPeople } from "@/lib/bara/people";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useI18n } from "./LanguageProvider";
 
 type AuthStatus = "checking" | "allowed" | "redirecting";
 
@@ -17,6 +18,7 @@ export default function AdditionalPersonAuthBoundary({
   nextPath?: string;
 }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [status, setStatus] = useState<AuthStatus>(enabled ? "checking" : "allowed");
 
   useEffect(() => {
@@ -89,11 +91,11 @@ export default function AdditionalPersonAuthBoundary({
           🔐
         </div>
         <h1 className="text-[17px] font-extrabold text-sb-ink tracking-tight">
-          로그인 확인 중이에요
+          {t("authBoundary.title")}
         </h1>
         <p className="mt-2 text-[13px] leading-relaxed text-sb-ink-2">
-          두 번째 사람부터는 계정에 안전하게 저장하기 위해 로그인이 필요해요.
-          {status === "redirecting" ? " 로그인 화면으로 이동합니다." : ""}
+          {t("authBoundary.description")}
+          {status === "redirecting" ? t("authBoundary.redirecting") : ""}
         </p>
       </section>
     </div>

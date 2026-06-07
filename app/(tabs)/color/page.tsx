@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import ColorBaraResume from "@/app/components/ColorBaraResume";
+import { useI18n } from "@/app/components/LanguageProvider";
+import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 const DAYS = Array.from({ length: 30 }, (_, i) => i + 1);
@@ -10,6 +12,7 @@ const SELECT_CHEVRON =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%238B7758' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>\")";
 
 export default function ColorBaraPage() {
+  const { t } = useI18n();
   const [calendar, setCalendar] = useState<"lunar" | "solar">("lunar");
 
   return (
@@ -29,17 +32,23 @@ export default function ColorBaraPage() {
           style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
         >
           <BackIcon />
-          홈
+          {t("common.home")}
         </Link>
         <span className="text-[15px] font-extrabold text-sb-olive-dark tracking-tight">
-          컬러바라
+          {t("color.title")}
         </span>
-        <span
-          className="h-9 px-3 rounded-full flex items-center text-[10px] font-extrabold text-sb-olive-dark"
-          style={{ background: "var(--sb-cream)", boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
-        >
-          무료
-        </span>
+        <div className="flex items-center gap-1.5">
+          <LanguageSwitcher compact />
+          <span
+            className="h-9 px-3 rounded-full flex items-center text-[10px] font-extrabold text-sb-olive-dark"
+            style={{
+              background: "var(--sb-cream)",
+              boxShadow: "inset 0 0 0 1px var(--sb-hairline)",
+            }}
+          >
+            {t("common.free")}
+          </span>
+        </div>
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 pt-4 pb-8">
@@ -53,15 +62,18 @@ export default function ColorBaraPage() {
         >
           <div className="relative z-10">
             <div className="text-[10.5px] font-extrabold tracking-[0.16em] uppercase text-sb-olive-light mb-2">
-              Color Numerology
+              {t("color.hero.eyebrow")}
             </div>
             <h1 className="text-[26px] font-extrabold text-sb-ink leading-tight tracking-tight">
-              음력 생일로 보는
-              <br />
-              나의 운명 컬러
+              {t("color.hero.title").split("\n").map((line, index, lines) => (
+                <span key={`${line}-${index}`}>
+                  {line}
+                  {index < lines.length - 1 && <br />}
+                </span>
+              ))}
             </h1>
             <p className="mt-3 max-w-[270px] text-[13px] font-semibold text-sb-ink-2 leading-relaxed">
-              음력은 월과 일만, 양력은 생년월일을 입력하면 음력 생일로 자동 변환해 컬러를 계산해요.
+              {t("color.hero.description")}
             </p>
           </div>
 
@@ -84,18 +96,18 @@ export default function ColorBaraPage() {
         <ColorBaraResume />
 
         <form action="/color/result" className="mt-4 flex flex-col gap-3">
-          <Field label="이름">
+          <Field label={t("color.field.name")}>
             <input
               name="name"
               type="text"
               maxLength={20}
-              placeholder="이름을 입력하세요"
+              placeholder={t("color.placeholder.name")}
               className="w-full bg-sb-paper rounded-sb-md px-4 py-3 text-[15px] text-sb-ink placeholder:text-sb-ink-3 outline-none focus:ring-2 focus:ring-sb-olive/50"
               style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
             />
           </Field>
 
-          <Field label="달력 기준">
+          <Field label={t("color.field.calendar")}>
             <select
               name="calendar"
               value={calendar}
@@ -109,16 +121,16 @@ export default function ColorBaraPage() {
                 backgroundSize: "12px 8px",
               }}
             >
-              <option value="lunar">음력</option>
-              <option value="solar">양력</option>
+              <option value="lunar">{t("saju.calendar.lunar")}</option>
+              <option value="solar">{t("saju.calendar.solar")}</option>
             </select>
             <p className="px-1 text-[11px] font-semibold leading-relaxed text-sb-ink-3">
-              양력으로 입력하면 결과에서 음력 월/일로 변환해 분석합니다.
+              {t("color.calendarHelp")}
             </p>
           </Field>
 
           {calendar === "solar" ? (
-            <Field label="양력 생년월일">
+            <Field label={t("color.field.solarDate")}>
               <input
                 name="solarDate"
                 type="date"
@@ -130,7 +142,7 @@ export default function ColorBaraPage() {
             </Field>
           ) : (
             <div className="grid grid-cols-2 gap-2">
-              <Field label="음력 월">
+              <Field label={t("color.field.lunarMonth")}>
                 <select
                   name="month"
                   defaultValue="5"
@@ -145,13 +157,13 @@ export default function ColorBaraPage() {
                 >
                   {MONTHS.map((month) => (
                     <option key={month} value={month}>
-                      {month}월
+                      {t("color.monthSuffix", { value: month })}
                     </option>
                   ))}
                 </select>
               </Field>
 
-              <Field label="음력 일">
+              <Field label={t("color.field.lunarDay")}>
                 <select
                   name="day"
                   defaultValue="17"
@@ -166,7 +178,7 @@ export default function ColorBaraPage() {
                 >
                   {DAYS.map((day) => (
                     <option key={day} value={day}>
-                      {day}일
+                      {t("color.daySuffix", { value: day })}
                     </option>
                   ))}
                 </select>
@@ -184,10 +196,10 @@ export default function ColorBaraPage() {
               boxShadow: "var(--shadow-sb-pop), inset 0 1px 0 rgba(255,255,255,0.4)",
             }}
           >
-            🎨 내 운명 컬러 보기
+            🎨 {t("color.submit")}
           </button>
           <p className="text-center text-[11px] text-sb-ink-3">
-            무료 리포트 · 양력은 음력으로 자동 변환돼요
+            {t("color.note")}
           </p>
         </form>
       </div>

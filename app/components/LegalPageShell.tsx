@@ -1,10 +1,17 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { LocalizedValue } from "@/app/components/LanguageProvider";
+import LanguageSwitcher from "@/app/components/LanguageSwitcher";
+
+export type LegalText = {
+  ko: string;
+  en: string;
+};
 
 type LegalPageShellProps = {
-  title: string;
-  description: string;
-  updatedAt: string;
+  title: LegalText;
+  description: LegalText;
+  updatedAt: LegalText;
   children: ReactNode;
 };
 
@@ -31,12 +38,12 @@ export default function LegalPageShell({
           style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
         >
           <span aria-hidden>‹</span>
-          홈
+          <LocalizedValue ko="홈" en="Home" />
         </Link>
         <span className="text-[15px] font-extrabold text-sb-olive-dark">
-          {title}
+          <LocalizedValue ko={title.ko} en={title.en} />
         </span>
-        <div className="w-[54px]" />
+        <LanguageSwitcher compact />
       </header>
 
       <article className="px-5 pt-5 pb-10">
@@ -50,13 +57,16 @@ export default function LegalPageShell({
             Sajubara Policy
           </p>
           <h1 className="mt-2 text-[25px] font-extrabold leading-tight text-sb-ink">
-            {title}
+            <LocalizedValue ko={title.ko} en={title.en} />
           </h1>
           <p className="mt-3 text-[13px] font-semibold leading-relaxed text-sb-ink-2">
-            {description}
+            <LocalizedValue ko={description.ko} en={description.en} />
           </p>
           <p className="mt-4 rounded-full bg-sb-cream px-3 py-2 text-[11px] font-bold text-sb-ink-3">
-            시행일 및 최종 업데이트: {updatedAt}
+            <LocalizedValue
+              ko={`시행일 및 최종 업데이트: ${updatedAt.ko}`}
+              en={`Effective and last updated: ${updatedAt.en}`}
+            />
           </p>
         </section>
 
@@ -70,7 +80,7 @@ export function LegalSection({
   title,
   children,
 }: {
-  title: string;
+  title: LegalText;
   children: ReactNode;
 }) {
   return (
@@ -80,7 +90,9 @@ export function LegalSection({
         boxShadow: "var(--shadow-sb-card), inset 0 0 0 1px rgba(91,74,54,0.06)",
       }}
     >
-      <h2 className="text-[15px] font-extrabold text-sb-ink">{title}</h2>
+      <h2 className="text-[15px] font-extrabold text-sb-ink">
+        <LocalizedValue ko={title.ko} en={title.en} />
+      </h2>
       <div className="mt-2 text-[12.5px] font-semibold leading-relaxed text-sb-ink-2">
         {children}
       </div>

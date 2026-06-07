@@ -23,8 +23,15 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Refresh session if expired (sets new cookies on response)
-  await supabase.auth.getUser();
+  // Refresh session if expired (sets new cookies on response).
+  // When the Supabase project URL is wrong/deleted, do not let every page crash.
+  try {
+    await supabase.auth.getUser();
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[sajubara] Supabase session refresh skipped:", error);
+    }
+  }
 
   return response;
 }

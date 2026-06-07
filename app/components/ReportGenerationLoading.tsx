@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { T } from "./LanguageProvider";
 
 type ReportGenerationLoadingProps = {
   icon?: string;
@@ -66,7 +67,7 @@ export default function ReportGenerationLoading({
       </div>
 
       <p className="mt-7 text-[13px] font-semibold text-sb-muted">
-        보통 잠시 후 자동으로 결과가 이어서 표시됩니다.
+        <T k="loading.defaultFooter" />
       </p>
     </section>
   );

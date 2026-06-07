@@ -12,23 +12,25 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { TranslationKey } from "@/app/i18n";
+import { useI18n } from "./LanguageProvider";
 
 const BARA_FACE_SRC = "/images/brand/capybara-glass-face.png";
 
 type Tab = {
   href: string;
-  label: string;
+  labelKey: TranslationKey;
   iconKey: "home" | "people" | "charge" | "archive";
 };
 
 const LEFT_TABS: Tab[] = [
-  { href: "/", label: "홈", iconKey: "home" },
-  { href: "/people", label: "사주 관리", iconKey: "people" },
+  { href: "/", labelKey: "tab.home", iconKey: "home" },
+  { href: "/people", labelKey: "tab.people", iconKey: "people" },
 ];
 
 const RIGHT_TABS: Tab[] = [
-  { href: "/charge", label: "충전소", iconKey: "charge" },
-  { href: "/my", label: "보관함", iconKey: "archive" },
+  { href: "/charge", labelKey: "tab.charge", iconKey: "charge" },
+  { href: "/my", labelKey: "tab.archive", iconKey: "archive" },
 ];
 
 const TAB_ICONS = {
@@ -46,12 +48,13 @@ const TAB_ICONS = {
 
 export default function TabBar() {
   const pathname = usePathname();
+  const { t } = useI18n();
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <nav
-      aria-label="하단 탭"
+      aria-label={t("tab.home")}
       className="pointer-events-none fixed bottom-0 left-1/2 z-40 w-full max-w-[420px] -translate-x-1/2 px-3 pt-5 pb-[calc(0.7rem+env(safe-area-inset-bottom))]"
     >
       <div
@@ -78,6 +81,7 @@ export default function TabBar() {
 }
 
 function TabItem({ tab, active }: { tab: Tab; active: boolean }) {
+  const { t } = useI18n();
   const color = active ? "text-sb-olive" : "text-sb-ink-3";
   return (
     <Link
@@ -89,13 +93,14 @@ function TabItem({ tab, active }: { tab: Tab; active: boolean }) {
       <span
         className={`text-[10px] tracking-tight ${active ? "font-extrabold" : "font-semibold"}`}
       >
-        {tab.label}
+        {t(tab.labelKey)}
       </span>
     </Link>
   );
 }
 
 function CenterTab({ active }: { active: boolean }) {
+  const { t } = useI18n();
   return (
     <div className="flex-1 flex flex-col items-center gap-[2px] relative">
       <Link
@@ -108,7 +113,7 @@ function CenterTab({ active }: { active: boolean }) {
             ? "0 8px 22px rgba(92,110,62,0.25), inset 0 1px 0 rgba(255,255,255,0.72)"
             : "0 8px 22px rgba(92,110,62,0.18), inset 0 1px 0 rgba(255,255,255,0.68)",
         }}
-        aria-label="오늘의 운세"
+        aria-label={t("tab.today")}
         aria-current={active ? "page" : undefined}
       >
         <img
@@ -119,7 +124,7 @@ function CenterTab({ active }: { active: boolean }) {
         />
       </Link>
       <span className={`text-[10px] font-extrabold tracking-tight ${active ? "text-sb-olive" : "text-sb-ink-3"}`}>
-        오늘의 운세
+        {t("tab.today")}
       </span>
     </div>
   );

@@ -426,7 +426,7 @@ function getClient(): OpenAI {
   return new OpenAI({ apiKey });
 }
 
-const MODEL_FULL = process.env.OPENAI_MODEL_FULL ?? "gpt-4o";
+const MODEL_FULL = process.env.OPENAI_MODEL_FULL ?? process.env.OPENAI_MODEL ?? "gpt-4o";
 const MODEL_LITE = process.env.OPENAI_MODEL_LITE ?? "gpt-4o-mini";
 
 async function chat(

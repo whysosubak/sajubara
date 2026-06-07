@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { T } from "@/app/components/LanguageProvider";
+import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import TodayFortuneClient from "@/app/components/TodayFortuneClient";
 import { todayLunarLabel } from "@/lib/saju/today";
 
@@ -19,8 +21,14 @@ export default async function TodayPage({
     <>
       <Header />
       <TodayFortuneClient
-        dateLabel={formatKstDate()}
-        lunarLabel={todayLunarLabel()}
+        dateLabel={{
+          ko: formatKstDate("ko"),
+          en: formatKstDate("en"),
+        }}
+        lunarLabel={{
+          ko: todayLunarLabel("ko"),
+          en: todayLunarLabel("en"),
+        }}
         initialDate={sp.date}
         initialPurpose={sp.purpose}
         initialMemo={sp.memo}
@@ -45,7 +53,7 @@ function Header() {
         href="/"
         className="h-9 w-9 rounded-full bg-sb-paper flex items-center justify-center"
         style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
-        aria-label="홈"
+        aria-label="Home"
       >
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
           <path
@@ -59,25 +67,37 @@ function Header() {
       </Link>
       <div className="text-center">
         <h1 className="text-[17px] font-extrabold text-sb-olive-dark">
-          오늘의 운세
+          <T k="today.title" />
         </h1>
         <p className="mt-[2px] text-[10px] font-semibold text-sb-ink-3">
-          무료 데일리 · 날짜별 운세
+          <T k="today.subtitle" />
         </p>
       </div>
-      <Link
-        href="/people"
-        className="h-9 rounded-full bg-sb-paper px-3 flex items-center justify-center text-[12px] font-extrabold text-sb-ink-2"
-        style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
-      >
-        사람
-      </Link>
+      <div className="flex items-center gap-1.5">
+        <LanguageSwitcher compact />
+        <Link
+          href="/people"
+          className="h-9 rounded-full bg-sb-paper px-3 flex items-center justify-center text-[12px] font-extrabold text-sb-ink-2"
+          style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
+        >
+          <T k="common.person" />
+        </Link>
+      </div>
     </header>
   );
 }
 
-function formatKstDate() {
+function formatKstDate(locale: "ko" | "en") {
   const now = new Date();
+  if (locale === "en") {
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Seoul",
+      month: "short",
+      day: "numeric",
+      weekday: "short",
+    }).format(now);
+  }
+
   const parts = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
     month: "numeric",

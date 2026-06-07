@@ -5,7 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdditionalPersonAuthBoundary from "@/app/components/AdditionalPersonAuthBoundary";
+import { useI18n } from "@/app/components/LanguageProvider";
+import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import { YuzuIcon } from "@/app/components/capybara";
+import type { TranslationKey } from "@/app/i18n";
 import { LS_LEGACY_INPUT, SECONDARY_RELATION_OPTIONS } from "@/lib/bara/people";
 import type { Relation } from "@/lib/bara/people";
 import {
@@ -26,42 +29,102 @@ const BARA_FACE_SRC = "/images/brand/capybara-glass-face.png";
 const FLOW_COPY: Record<
   InputFlow,
   {
-    eyebrow: string;
-    title: string;
-    hero: string;
-    submit: string;
-    note: string;
+    eyebrowKey: TranslationKey;
+    titleKey: TranslationKey;
+    heroKey: TranslationKey;
+    heroIcon: string;
+    submitKey: TranslationKey;
+    submitIcon: string;
+    noteKey: TranslationKey;
     destination: string;
   }
 > = {
   saju: {
-    eyebrow: "바라의 한 마디",
-    title: "태어난 시간까지 알려주시면",
-    hero: "더 정확하게 봐드릴 수 있어요 🛁",
-    submit: "🛁 사주 보러 가기",
-    note: "미리보기 단계 · 결제 없이 결과 확인",
+    eyebrowKey: "saju.flow.saju.eyebrow",
+    titleKey: "saju.flow.saju.title",
+    heroKey: "saju.flow.saju.hero",
+    heroIcon: "🛁",
+    submitKey: "saju.flow.saju.submit",
+    submitIcon: "🛁",
+    noteKey: "saju.flow.saju.note",
     destination: "/saju/result",
   },
   daewoon: {
-    eyebrow: "대운 해설 준비",
-    title: "지금 들어온 10년 흐름을",
-    hero: "생년월일시 기준으로 바로 풀어드릴게요 🌊",
-    submit: "🌊 대운 해설 보기",
-    note: "대운 미리보기 · 현재 10년 흐름 먼저 확인",
+    eyebrowKey: "saju.flow.daewoon.eyebrow",
+    titleKey: "saju.flow.daewoon.title",
+    heroKey: "saju.flow.daewoon.hero",
+    heroIcon: "🌊",
+    submitKey: "saju.flow.daewoon.submit",
+    submitIcon: "🌊",
+    noteKey: "saju.flow.daewoon.note",
     destination: "/daewoon",
   },
   yearly: {
-    eyebrow: "연도별 운세 준비",
-    title: "올해와 앞으로의 흐름을",
-    hero: "월별 운세까지 이어서 볼 수 있어요 📅",
-    submit: "📅 연도별 운세 보기",
-    note: "연도별 미리보기 · 올해 흐름 먼저 확인",
+    eyebrowKey: "saju.flow.yearly.eyebrow",
+    titleKey: "saju.flow.yearly.title",
+    heroKey: "saju.flow.yearly.hero",
+    heroIcon: "📅",
+    submitKey: "saju.flow.yearly.submit",
+    submitIcon: "📅",
+    noteKey: "saju.flow.yearly.note",
     destination: "/yearly",
   },
 };
 
+const ADD_PERSON_COPY = {
+  ...FLOW_COPY.saju,
+  eyebrowKey: "saju.flow.addPerson.eyebrow",
+  titleKey: "saju.flow.addPerson.title",
+  heroKey: "saju.flow.addPerson.hero",
+  heroIcon: "🌿",
+  submitKey: "saju.flow.addPerson.submit",
+  submitIcon: "🔮",
+  noteKey: "saju.flow.addPerson.note",
+} satisfies (typeof FLOW_COPY)["saju"];
+
+const BIRTH_TIME_LABEL_KEYS: Record<string, TranslationKey> = {
+  모름: "saju.birthTime.unknownLabel",
+  자시: "saju.birthTime.ja",
+  축시: "saju.birthTime.chuk",
+  인시: "saju.birthTime.in",
+  묘시: "saju.birthTime.myo",
+  진시: "saju.birthTime.jin",
+  사시: "saju.birthTime.sa",
+  오시: "saju.birthTime.o",
+  미시: "saju.birthTime.mi",
+  신시: "saju.birthTime.sin",
+  유시: "saju.birthTime.yu",
+  술시: "saju.birthTime.sul",
+  해시: "saju.birthTime.hae",
+};
+
+const RELATION_LABEL_KEYS: Record<Relation, TranslationKey> = {
+  본인: "saju.relation.self",
+  배우자: "saju.relation.spouse",
+  연인: "saju.relation.partner",
+  가족: "saju.relation.family",
+  친구: "saju.relation.friend",
+  지인: "saju.relation.acquaintance",
+  기타: "saju.relation.other",
+};
+
+const LOVE_STATUS_LABEL_KEYS: Record<LoveStatus, TranslationKey> = {
+  솔로: "saju.love.single",
+  "연애 중": "saju.love.dating",
+  기혼: "saju.love.married",
+};
+
+const JOB_STATUS_LABEL_KEYS: Record<JobStatus, TranslationKey> = {
+  직장인: "saju.job.employee",
+  프리랜서: "saju.job.freelancer",
+  학생: "saju.job.student",
+  자영업: "saju.job.selfEmployed",
+  무직: "saju.job.none",
+};
+
 export default function SajuInputPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [flow, setFlow] = useState<InputFlow>("saju");
   const [mode, setMode] = useState<InputMode>("default");
   const [name, setName] = useState("");
@@ -148,16 +211,7 @@ export default function SajuInputPage() {
   }
 
   const addPersonMode = mode === "add-person" && flow === "saju";
-  const copy = addPersonMode
-    ? {
-        ...FLOW_COPY.saju,
-        eyebrow: "다른 사람 사주 추가",
-        title: "먼저 만세력만 확인하고",
-        hero: "해석은 저장 후 990원으로 열어요 🌿",
-        submit: "🔮 만세력 미리보기",
-        note: "무료 미리보기 · 해석 본문은 결제 후 열림",
-      }
-    : FLOW_COPY[flow];
+  const copy = addPersonMode ? ADD_PERSON_COPY : FLOW_COPY[flow];
   const canSubmit = name.trim().length > 0 && birthDate.length > 0 && !submitting;
 
   return (
@@ -185,11 +239,14 @@ export default function SajuInputPage() {
               strokeLinejoin="round"
             />
           </svg>
-          뒤로
+          {t("common.back")}
         </Link>
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-sb-terra-dark">
-          <YuzuIcon size={14} /> 1 유자
-        </span>
+        <div className="flex items-center gap-1.5">
+          <LanguageSwitcher compact />
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-sb-terra-dark">
+            <YuzuIcon size={14} /> {t("common.yuzu.one")}
+          </span>
+        </div>
       </header>
 
       <AdditionalPersonAuthBoundary enabled={addPersonMode}>
@@ -245,12 +302,12 @@ export default function SajuInputPage() {
               </div>
               <div className="relative">
                 <div className="text-[10.5px] font-bold text-sb-olive-light mb-0.5">
-                  {copy.eyebrow}
+                  {t(copy.eyebrowKey)}
                 </div>
                 <div className="text-[15px] font-extrabold text-sb-ink leading-snug tracking-tight">
-                  {copy.title}
+                  {t(copy.titleKey)}
                   <br />
-                  {copy.hero}
+                  {t(copy.heroKey)} {copy.heroIcon}
                 </div>
               </div>
             </div>
@@ -258,12 +315,12 @@ export default function SajuInputPage() {
         </section>
 
         <form onSubmit={handleSubmit} className="px-4 flex flex-col gap-3 pb-8">
-        <Field label="이름">
+        <Field label={t("saju.field.name")}>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="홍길동"
+            placeholder={t("saju.placeholder.name")}
             maxLength={20}
             className="w-full bg-sb-paper rounded-sb-md px-4 py-3 text-[15px] text-sb-ink placeholder:text-sb-ink-3 outline-none focus:ring-2 focus:ring-sb-olive/50"
             style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
@@ -271,21 +328,21 @@ export default function SajuInputPage() {
         </Field>
 
         {addPersonMode && (
-          <Field label="관계">
+          <Field label={t("saju.field.relation")}>
             <div className="flex flex-wrap gap-1.5">
               {SECONDARY_RELATION_OPTIONS.map((r) => (
                 <Chip
                   key={r}
                   active={relation === r}
                   onClick={() => setRelation(r)}
-                  label={r}
+                  label={t(RELATION_LABEL_KEYS[r])}
                 />
               ))}
             </div>
           </Field>
         )}
 
-        <Field label="생년월일">
+        <Field label={t("saju.field.birthDate")}>
           <input
             type="date"
             value={birthDate}
@@ -296,18 +353,18 @@ export default function SajuInputPage() {
           />
         </Field>
 
-        <Field label="양력 / 음력">
+        <Field label={t("saju.field.calendar")}>
           <SegmentedControl
             value={calendar}
             onChange={setCalendar}
             options={[
-              { value: "양력", label: "양력" },
-              { value: "음력", label: "음력" },
+              { value: "양력", label: t("saju.calendar.solar") },
+              { value: "음력", label: t("saju.calendar.lunar") },
             ]}
           />
         </Field>
 
-        <Field label="태어난 시간">
+        <Field label={t("saju.field.birthTime")}>
           <select
             value={birthTime}
             onChange={(e) => setBirthTime(e.target.value)}
@@ -321,62 +378,64 @@ export default function SajuInputPage() {
               paddingRight: 36,
             }}
           >
-            {BIRTH_TIMES.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
+            {BIRTH_TIMES.map((time) => (
+              <option key={time.value} value={time.value}>
+                {BIRTH_TIME_LABEL_KEYS[time.value]
+                  ? t(BIRTH_TIME_LABEL_KEYS[time.value])
+                  : time.label}
               </option>
             ))}
           </select>
         </Field>
 
-        <Field label="성별">
+        <Field label={t("saju.field.gender")}>
           <SegmentedControl
             value={gender}
             onChange={setGender}
             options={[
-              { value: "여", label: "여" },
-              { value: "남", label: "남" },
+              { value: "여", label: t("saju.gender.female") },
+              { value: "남", label: t("saju.gender.male") },
             ]}
           />
         </Field>
 
         <div className="mt-1 mb-1 px-1">
           <p className="text-[10.5px] text-sb-ink-3 font-bold tracking-wider uppercase">
-            상황 (선택) — 알려주면 해석이 더 정확해져요
+            {t("saju.optionalContext")}
           </p>
         </div>
 
-        <Field label="연애 상태">
+        <Field label={t("saju.field.loveStatus")}>
           <div className="flex flex-wrap gap-1.5">
             <Chip
               active={loveStatus === ""}
               onClick={() => setLoveStatus("")}
-              label="선택 안 함"
+              label={t("saju.option.none")}
             />
             {LOVE_STATUSES.map((s) => (
               <Chip
                 key={s}
                 active={loveStatus === s}
                 onClick={() => setLoveStatus(s)}
-                label={s}
+                label={t(LOVE_STATUS_LABEL_KEYS[s])}
               />
             ))}
           </div>
         </Field>
 
-        <Field label="직업 상태">
+        <Field label={t("saju.field.jobStatus")}>
           <div className="flex flex-wrap gap-1.5">
             <Chip
               active={jobStatus === ""}
               onClick={() => setJobStatus("")}
-              label="선택 안 함"
+              label={t("saju.option.none")}
             />
             {JOB_STATUSES.map((s) => (
               <Chip
                 key={s}
                 active={jobStatus === s}
                 onClick={() => setJobStatus(s)}
-                label={s}
+                label={t(JOB_STATUS_LABEL_KEYS[s])}
               />
             ))}
           </div>
@@ -396,10 +455,10 @@ export default function SajuInputPage() {
               : "none",
           }}
         >
-          {submitting ? "잠시만 기다려 주세요…" : copy.submit}
+          {submitting ? t("common.wait") : `${copy.submitIcon} ${t(copy.submitKey)}`}
         </button>
         <p className="text-center text-[11px] text-sb-ink-3 mt-1">
-          {copy.note}
+          {t(copy.noteKey)}
         </p>
         </form>
         </div>

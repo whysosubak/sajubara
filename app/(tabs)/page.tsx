@@ -1,13 +1,23 @@
 import AuthButton from "@/app/components/AuthButton";
+import { LocalizedValue, T } from "@/app/components/LanguageProvider";
+import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import MenuCardLink from "@/app/components/MenuCardLink";
+import type { TranslationKey } from "@/app/i18n";
 import { todayLunarLabel } from "@/lib/saju/today";
 import Link from "next/link";
 
 const BARA_FACE_SRC = "/images/brand/capybara-glass-face.png";
+type LocalizedLabels = { ko: string; en: string };
 
 export default function Home() {
-  const lunarLabel = todayLunarLabel();
-  const dateLabel = formatKstDate();
+  const lunarLabel = {
+    ko: todayLunarLabel("ko"),
+    en: todayLunarLabel("en"),
+  };
+  const dateLabel = {
+    ko: formatKstDate("ko"),
+    en: formatKstDate("en"),
+  };
   return (
     <>
       <Header />
@@ -20,8 +30,17 @@ export default function Home() {
   );
 }
 
-function formatKstDate() {
+function formatKstDate(locale: "ko" | "en") {
   const now = new Date();
+  if (locale === "en") {
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Seoul",
+      month: "short",
+      day: "numeric",
+      weekday: "short",
+    }).format(now);
+  }
+
   const parts = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
     month: "numeric",
@@ -34,7 +53,13 @@ function formatKstDate() {
   return `${month}/${day} ${weekday}`;
 }
 
-function OnsenHero({ lunarLabel, dateLabel }: { lunarLabel: string; dateLabel: string }) {
+function OnsenHero({
+  lunarLabel,
+  dateLabel,
+}: {
+  lunarLabel: LocalizedLabels;
+  dateLabel: LocalizedLabels;
+}) {
   return (
     <section className="px-4 pt-3 pb-2">
       <div
@@ -60,25 +85,23 @@ function OnsenHero({ lunarLabel, dateLabel }: { lunarLabel: string; dateLabel: s
         <div className="absolute left-5 right-5 top-5 z-20">
           <div>
             <div className="text-[21px] font-extrabold text-sb-ink">
-              {dateLabel}
+              <LocalizedValue ko={dateLabel.ko} en={dateLabel.en} />
             </div>
             <div className="mt-1 text-[11px] font-extrabold text-sb-ink-2 opacity-75">
-              {lunarLabel}
+              <LocalizedValue ko={lunarLabel.ko} en={lunarLabel.en} />
             </div>
           </div>
         </div>
 
         <div className="relative z-20 px-5 pt-[112px]">
           <div className="text-[13px] font-extrabold text-sb-olive-dark leading-none mb-3">
-            오늘 무료
+            <T k="home.hero.badge" />
           </div>
           <h1 className="text-[34px] font-extrabold text-sb-ink leading-[1.14]">
-            오늘의 사주를
-            <br />
-            열어볼까요?
+            <T k="home.hero.title" preserveLines />
           </h1>
           <p className="mt-4 max-w-[250px] text-[13px] font-semibold text-sb-ink-2 leading-relaxed">
-            오늘 하루의 점수와 조심할 순간을 먼저 확인해보세요.
+            <T k="home.hero.description" />
           </p>
           <Link
             href="/today"
@@ -87,7 +110,7 @@ function OnsenHero({ lunarLabel, dateLabel }: { lunarLabel: string; dateLabel: s
               boxShadow: "0 8px 18px rgba(91,74,54,0.14), inset 0 0 0 1px rgba(91,74,54,0.08)",
             }}
           >
-            자세히 보기
+            <T k="common.more" />
             <span className="ml-1.5" aria-hidden>
               →
             </span>
@@ -126,13 +149,18 @@ function Header() {
           />
         </div>
         <div className="flex flex-col leading-none">
-          <span className="text-[19px] font-bold text-sb-olive-dark">사주바라</span>
+          <span className="text-[19px] font-bold text-sb-olive-dark">
+            <T k="home.brand" />
+          </span>
           <span className="text-[10px] font-semibold text-sb-ink-3 mt-[3px]">
-            따뜻하지만 정확한 운세 리포트
+            <T k="home.tagline" />
           </span>
         </div>
       </div>
-      <AuthButton />
+      <div className="flex items-center gap-2">
+        <LanguageSwitcher compact />
+        <AuthButton />
+      </div>
     </header>
   );
 }
@@ -140,14 +168,14 @@ function Header() {
 type MenuItem = {
   href: string;
   fallbackHref?: string;
-  title: string;
-  subtitle: string;
-  description: string;
+  titleKey: TranslationKey;
+  subtitleKey: TranslationKey;
+  descriptionKey: TranslationKey;
   image: string;
-  badge?: string;
+  badgeKey?: TranslationKey;
   fallbackFrom: string;
   fallbackTo: string;
-  priceLabel: string;
+  priceLabelKey: TranslationKey;
   isFree: boolean;
   requiresSaju?: boolean;
 };
@@ -156,51 +184,51 @@ const MENU: MenuItem[] = [
   {
     href: "/saju/result",
     fallbackHref: "/saju",
-    title: "사주바라",
-    subtitle: "기본 리포트",
-    description: "타고난 성향과 관계의 결",
+    titleKey: "home.menu.saju.title",
+    subtitleKey: "home.menu.saju.subtitle",
+    descriptionKey: "home.menu.saju.description",
     image: "/images/banners/saju.png",
     fallbackFrom: "#FCE7E3",
     fallbackTo: "#F5C8C0",
-    priceLabel: "일부 무료",
+    priceLabelKey: "common.partlyFree",
     isFree: true,
     requiresSaju: true,
   },
   {
     href: "/color",
-    title: "컬러바라",
-    subtitle: "무료 리포트",
-    description: "음력 생일로 보는 운명 컬러",
+    titleKey: "home.menu.color.title",
+    subtitleKey: "home.menu.color.subtitle",
+    descriptionKey: "home.menu.color.description",
     image: "/images/banners/color.png",
-    badge: "무료",
+    badgeKey: "common.free",
     fallbackFrom: "#EDEAC8",
     fallbackTo: "#C9DFE5",
-    priceLabel: "무료",
+    priceLabelKey: "common.free",
     isFree: true,
   },
   {
     href: "/daewoon",
     fallbackHref: "/saju?next=daewoon",
-    title: "대운해설",
-    subtitle: "10년 흐름",
-    description: "지금 들어온 큰 흐름",
+    titleKey: "home.menu.daewoon.title",
+    subtitleKey: "home.menu.daewoon.subtitle",
+    descriptionKey: "home.menu.daewoon.description",
     image: "/images/banners/daewoon-blue.png",
     fallbackFrom: "#D9E9F7",
     fallbackTo: "#7EA8CF",
-    priceLabel: "일부 무료",
+    priceLabelKey: "common.partlyFree",
     isFree: true,
     requiresSaju: true,
   },
   {
     href: "/yearly",
     fallbackHref: "/saju?next=yearly",
-    title: "연도별운세",
-    subtitle: "한 해 흐름",
-    description: "월별 흐름과 조심할 때",
+    titleKey: "home.menu.yearly.title",
+    subtitleKey: "home.menu.yearly.subtitle",
+    descriptionKey: "home.menu.yearly.description",
     image: "/images/banners/yearly.png",
     fallbackFrom: "#F5E5B6",
     fallbackTo: "#E8CB7B",
-    priceLabel: "일부 무료",
+    priceLabelKey: "common.partlyFree",
     isFree: true,
     requiresSaju: true,
   },
@@ -210,10 +238,10 @@ function MenuGrid() {
   return (
     <section className="px-4 pt-2 pb-4">
       <div className="text-[10.5px] font-extrabold text-sb-ink-3 tracking-[0.18em] uppercase mb-1">
-        Fortune Reports
+        <T k="home.menu.eyebrow" />
       </div>
       <h2 className="text-[20px] font-extrabold text-sb-ink leading-tight mb-3.5">
-        지금 필요한 흐름을 골라보세요
+        <T k="home.menu.title" />
       </h2>
       <div className="grid grid-cols-2 gap-3">
         {MENU.map((item) => (
@@ -245,7 +273,7 @@ function MenuCard({ item }: { item: MenuItem }) {
         }}
         aria-hidden
       >
-        {item.badge && (
+        {item.badgeKey && (
           <span
             className="absolute top-2 right-2 inline-flex items-center px-2 py-[3px] rounded-full text-[10px] font-extrabold text-sb-ink"
             style={{
@@ -254,20 +282,20 @@ function MenuCard({ item }: { item: MenuItem }) {
               boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
             }}
           >
-            {item.badge}
+            <T k={item.badgeKey} />
           </span>
         )}
       </div>
 
       <div className="px-3 pt-2.5 pb-3 flex flex-col min-h-[112px]">
         <div className="text-[10px] font-extrabold text-sb-ink-3 mb-1">
-          {item.subtitle}
+          <T k={item.subtitleKey} />
         </div>
         <h3 className="text-[16px] font-extrabold text-sb-ink leading-tight">
-          {item.title}
+          <T k={item.titleKey} />
         </h3>
         <p className="mt-1 text-[11px] font-semibold text-sb-ink-2 leading-snug min-h-[30px]">
-          {item.description}
+          <T k={item.descriptionKey} />
         </p>
         <div className="flex items-center justify-between mt-auto pt-2">
           {item.isFree ? (
@@ -275,12 +303,12 @@ function MenuCard({ item }: { item: MenuItem }) {
               className="inline-flex items-center px-2 py-[3px] rounded-[6px] text-[10px] font-extrabold text-sb-olive-dark"
               style={{ background: "rgba(92,110,62,0.12)" }}
             >
-              {item.priceLabel}
+              <T k={item.priceLabelKey} />
             </span>
           ) : (
             <span className="inline-flex items-center gap-1 text-[12px] font-extrabold text-sb-ink">
               <YuzuCoin />
-              {item.priceLabel}
+              <T k={item.priceLabelKey} />
             </span>
           )}
           <span
@@ -322,20 +350,20 @@ function FooterMini() {
   return (
     <footer className="px-5 pt-3 pb-6 flex flex-col gap-2 text-center">
       <p className="text-[11px] font-semibold text-sb-ink-3 leading-relaxed">
-        사주바라 · 온천처럼 따뜻한 운세 리포트
+        <T k="home.footer.brand" />
       </p>
       <p className="text-[10.5px] font-semibold text-sb-ink-3 leading-relaxed opacity-80">
-        사주·운세·컬러수비학 결과는 참고용 콘텐츠이며, 전문적인 의학·법률·재무·투자 판단을 대체하지 않습니다.
+        <T k="home.footer.disclaimer" />
       </p>
       <div className="flex items-center justify-center gap-3 text-[10.5px] font-extrabold text-sb-ink-3">
         <Link href="/terms" className="underline underline-offset-2">
-          이용약관
+          <T k="common.terms" />
         </Link>
         <Link href="/privacy" className="underline underline-offset-2">
-          개인정보처리방침
+          <T k="common.privacy" />
         </Link>
         <Link href="/refund" className="underline underline-offset-2">
-          환불정책
+          <T k="common.refund" />
         </Link>
       </div>
       <p className="text-[10px] text-sb-ink-3 opacity-60">

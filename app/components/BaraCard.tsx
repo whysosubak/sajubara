@@ -1,8 +1,12 @@
 import Image from "next/image";
+import { LocalizedValue } from "@/app/components/LanguageProvider";
 import {
+  BRANCH_LABEL_EN,
   BRANCH_LABEL_KR,
+  ELEMENT_COLOR_EN,
   ELEMENT_COLOR_KR,
   ELEMENT_EMOJI,
+  ELEMENT_LABEL_EN,
   ELEMENT_LABEL_KR,
   type BaraCard,
 } from "@/lib/bara/types";
@@ -27,25 +31,42 @@ export default function BaraCardView({
   const isWide = variant === "wide";
   const hasOwnBody = card.body.length > 0;
   const hasBodyContent = !!bodySlot || hasOwnBody;
+  const koCardLabel = `${ELEMENT_COLOR_KR[card.element]} ${BRANCH_LABEL_KR[card.branch]}`;
+  const enCardLabel = `${ELEMENT_COLOR_EN[card.element]} ${BRANCH_LABEL_EN[card.branch]}`;
 
   // 타이틀: subjectName + 닉네임 있으면 자연어 문장, 없으면 폴백 (오행색 + 동물)
   const renderTitle = () => {
     if (!subjectName || !written) {
       return (
         <h2 className="text-[17px] font-extrabold text-sb-ink tracking-tight leading-snug">
-          {written
-            ? card.nickname
-            : `${ELEMENT_COLOR_KR[card.element]} ${BRANCH_LABEL_KR[card.branch]}`}
+          <LocalizedValue
+            ko={written ? card.nickname : koCardLabel}
+            en={enCardLabel}
+          />
         </h2>
       );
     }
     return (
       <h2 className="text-[16px] font-bold text-sb-ink leading-snug tracking-tight">
-        {subjectName}님은{" "}
-        <strong className="text-sb-olive-dark font-extrabold">
-          &lsquo;{card.nickname}&rsquo;
-        </strong>{" "}
-        같은 에너지를 가지고 있어요
+        <LocalizedValue
+          ko={
+            <>
+              {subjectName}님은{" "}
+              <strong className="text-sb-olive-dark font-extrabold">
+                &lsquo;{card.nickname}&rsquo;
+              </strong>{" "}
+              같은 에너지를 가지고 있어요
+            </>
+          }
+          en={
+            <>
+              {subjectName} has the energy of{" "}
+              <strong className="text-sb-olive-dark font-extrabold">
+                &lsquo;{enCardLabel}&rsquo;
+              </strong>
+            </>
+          }
+        />
       </h2>
     );
   };
@@ -95,9 +116,10 @@ export default function BaraCardView({
               {ELEMENT_EMOJI[card.element]}
             </div>
             <h2 className="text-[15px] font-extrabold text-sb-ink tracking-tight leading-snug pt-0.5">
-              {written
-                ? card.nickname
-                : `${ELEMENT_LABEL_KR[card.element]} ${BRANCH_LABEL_KR[card.branch]}`}
+              <LocalizedValue
+                ko={written ? card.nickname : `${ELEMENT_LABEL_KR[card.element]} ${BRANCH_LABEL_KR[card.branch]}`}
+                en={`${ELEMENT_LABEL_EN[card.element]} ${BRANCH_LABEL_EN[card.branch]}`}
+              />
             </h2>
           </div>
         </div>

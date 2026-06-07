@@ -3,9 +3,50 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import LanguageSwitcher from "@/app/components/LanguageSwitcher";
+import { useI18n } from "@/app/components/LanguageProvider";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const BARA_FACE_SRC = "/images/brand/capybara-glass-face.png";
+const NEXT_COOKIE = "sajubara_auth_next";
+const NEXT_COOKIE_MAX_AGE_SECONDS = 10 * 60;
+const AUTH_REQUEST_TIMEOUT_MS = 12_000;
+const AUTH_REDIRECT_TIMEOUT_MS = 8_000;
+
+function normalizeNextPath(value: string) {
+  if (!value.startsWith("/") || value.startsWith("//")) return "/people";
+  return value;
+}
+
+function rememberNextPath(value: string) {
+  const safeNext = normalizeNextPath(value);
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `${NEXT_COOKIE}=${encodeURIComponent(
+    safeNext,
+  )}; Max-Age=${NEXT_COOKIE_MAX_AGE_SECONDS}; Path=/; SameSite=Lax${secure}`;
+  return safeNext;
+}
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string) {
+  let timeoutId: number | undefined;
+  const timeout = new Promise<never>((_resolve, reject) => {
+    timeoutId = window.setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+  });
+}
+
+async function assertAuthPreflight(message: string) {
+  const response = await withTimeout(
+    fetch("/api/auth/preflight", { cache: "no-store" }),
+    AUTH_REQUEST_TIMEOUT_MS,
+    message,
+  );
+
+  if (!response.ok) throw new Error(message);
+}
 
 export default function LoginPage() {
   return (
@@ -17,7 +58,8 @@ export default function LoginPage() {
 
 function LoginInner() {
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/people";
+  const { locale, t } = useI18n();
+  const next = normalizeNextPath(searchParams.get("next") ?? "/people");
 
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -27,23 +69,43 @@ function LoginInner() {
   const envMissing =
     !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+  function authErrorMessage(error: unknown, fallback: string) {
+    if (!(error instanceof Error)) return fallback;
+    if (/failed to fetch|load failed|networkerror|timed out|timeout|enotfound/i.test(error.message)) {
+      return t("auth.supabaseUnavailable");
+    }
+    return error.message || fallback;
+  }
+
   async function signInWithGoogle() {
     setErrorMessage(null);
     setProviderLoading("google");
     try {
+      await assertAuthPreflight(t("auth.supabaseUnavailable"));
       const supabase = createSupabaseBrowserClient();
-      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo },
-      });
+      rememberNextPath(next);
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const currentUrl = window.location.href;
+      const { data, error } = await withTimeout(
+        supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: { redirectTo, skipBrowserRedirect: true },
+        }),
+        AUTH_REQUEST_TIMEOUT_MS,
+        t("auth.supabaseUnavailable"),
+      );
       if (error) throw error;
-      // OAuth redirects browser, so we typically don't reach here.
+      if (!data.url) throw new Error(t("auth.googleError"));
+      window.location.assign(data.url);
+      window.setTimeout(() => {
+        if (window.location.href === currentUrl) {
+          setProviderLoading(null);
+          setErrorMessage(t("auth.supabaseUnavailable"));
+        }
+      }, AUTH_REDIRECT_TIMEOUT_MS);
     } catch (e) {
       setProviderLoading(null);
-      setErrorMessage(
-        e instanceof Error ? e.message : "Google 로그인 중 문제가 생겼어요.",
-      );
+      setErrorMessage(authErrorMessage(e, t("auth.googleError")));
     }
   }
 
@@ -53,19 +115,23 @@ function LoginInner() {
     setErrorMessage(null);
     setStatus("sending");
     try {
+      await assertAuthPreflight(t("auth.supabaseUnavailable"));
       const supabase = createSupabaseBrowserClient();
-      const emailRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
-        options: { emailRedirectTo },
-      });
+      rememberNextPath(next);
+      const emailRedirectTo = `${window.location.origin}/auth/callback`;
+      const { error } = await withTimeout(
+        supabase.auth.signInWithOtp({
+          email: email.trim(),
+          options: { emailRedirectTo },
+        }),
+        AUTH_REQUEST_TIMEOUT_MS,
+        t("auth.supabaseUnavailable"),
+      );
       if (error) throw error;
       setStatus("sent");
     } catch (e) {
       setStatus("error");
-      setErrorMessage(
-        e instanceof Error ? e.message : "이메일 전송 중 문제가 생겼어요.",
-      );
+      setErrorMessage(authErrorMessage(e, t("auth.emailError")));
     }
   }
 
@@ -86,10 +152,12 @@ function LoginInner() {
               strokeLinejoin="round"
             />
           </svg>
-          뒤로
+          {t("common.back")}
         </Link>
-        <span className="text-[15px] font-extrabold text-sb-olive-dark">로그인</span>
-        <div className="w-9" />
+        <span className="text-[15px] font-extrabold text-sb-olive-dark">
+          {t("login.title")}
+        </span>
+        <LanguageSwitcher compact />
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 pt-6 pb-8 flex flex-col items-center">
@@ -104,12 +172,15 @@ function LoginInner() {
           <img src={BARA_FACE_SRC} alt="" className="h-[72px] w-[72px] object-cover" aria-hidden />
         </div>
         <h1 className="text-[20px] font-extrabold text-sb-ink-2 tracking-tight mb-1.5 text-center">
-          사주바라에 오신 걸 환영해요
+          {t("login.welcome")}
         </h1>
         <p className="text-[13px] text-sb-ink-3 leading-relaxed text-center mb-7">
-          가족·친구·연인 사주를 함께 등록하려면
-          <br />
-          로그인이 필요해요.
+          {t("login.description").split("\n").map((line, index, lines) => (
+            <span key={`${line}-${index}`}>
+              {line}
+              {index < lines.length - 1 && <br />}
+            </span>
+          ))}
         </p>
 
         {envMissing && (
@@ -120,8 +191,7 @@ function LoginInner() {
               boxShadow: "inset 0 0 0 1px rgba(184,122,91,0.3)",
             }}
           >
-            ⚠️ Supabase 환경변수가 아직 설정 안 됐어요. 콘솔에서 NEXT_PUBLIC_SUPABASE_URL,
-            NEXT_PUBLIC_SUPABASE_ANON_KEY 등록 후 dev 서버를 재시작해 주세요.
+            {t("login.envMissing")}
           </div>
         )}
 
@@ -133,12 +203,12 @@ function LoginInner() {
           style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(91,74,54,0.12)" }}
         >
           <GoogleLogo />
-          {providerLoading === "google" ? "이동 중…" : "Google로 시작하기"}
+          {providerLoading === "google" ? t("login.googleLoading") : t("login.google")}
         </button>
 
         <div className="w-full flex items-center gap-3 my-5">
           <div className="flex-1 border-t border-sb-hairline" />
-          <span className="text-[11px] font-semibold text-sb-ink-3">또는</span>
+          <span className="text-[11px] font-semibold text-sb-ink-3">{t("login.or")}</span>
           <div className="flex-1 border-t border-sb-hairline" />
         </div>
 
@@ -151,11 +221,16 @@ function LoginInner() {
             }}
           >
             <div className="text-[24px] mb-1.5">📩</div>
-            <p className="text-[13.5px] text-sb-ink font-bold mb-1">메일을 보냈어요</p>
+            <p className="text-[13.5px] text-sb-ink font-bold mb-1">
+              {t("login.emailSentTitle")}
+            </p>
             <p className="text-[12px] text-sb-ink-2 leading-relaxed">
-              <strong>{email}</strong> 메일함을 확인하고
-              <br />
-              로그인 링크를 눌러 주세요.
+              {t("login.emailSentBody", { email }).split("\n").map((line, index, lines) => (
+                <span key={`${line}-${index}`}>
+                  {line}
+                  {index < lines.length - 1 && <br />}
+                </span>
+              ))}
             </p>
           </div>
         ) : (
@@ -164,7 +239,7 @@ function LoginInner() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="이메일 주소"
+              placeholder={t("login.emailPlaceholder")}
               required
               autoComplete="email"
               disabled={envMissing}
@@ -177,27 +252,27 @@ function LoginInner() {
               className="rounded-full bg-sb-olive text-white py-3 font-extrabold text-[14px] disabled:opacity-50"
               style={{ boxShadow: "0 2px 6px rgba(92,110,62,0.3)" }}
             >
-              {status === "sending" ? "보내는 중…" : "이메일로 로그인 링크 받기"}
+              {status === "sending" ? t("login.emailSending") : t("login.emailSubmit")}
             </button>
           </form>
         )}
 
         {errorMessage && (
-          <p className="text-[12px] text-sb-terra-dark mt-3 text-center leading-relaxed">
+          <p className="text-[12px] text-sb-terra-dark mt-3 text-center leading-relaxed" role="status">
             {errorMessage}
           </p>
         )}
 
         <p className="text-[11px] text-sb-ink-3 leading-relaxed text-center mt-6 px-2">
-          계속 진행하면{" "}
+          {t("login.consentPrefix")}{" "}
           <Link href="/terms" className="font-extrabold underline underline-offset-2">
-            이용약관
+            {t("common.terms")}
           </Link>
-          과{" "}
+          {locale === "ko" ? "과 " : " and "}
           <Link href="/privacy" className="font-extrabold underline underline-offset-2">
-            개인정보처리방침
+            {t("common.privacy")}
           </Link>
-          에 동의하는 것으로 간주됩니다.
+          {t("login.consentSuffix")}
         </p>
       </div>
     </div>

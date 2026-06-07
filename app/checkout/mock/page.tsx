@@ -20,9 +20,8 @@ export default async function MockCheckoutPage({
   const safeAmount = Number.isFinite(amount) && amount > 0 ? amount : 990;
   const returnTo = sanitizeReturnTo(sp.returnTo);
   const currentPath = buildCurrentPath(sp);
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) {
+  const user = await readCurrentUser();
+  if (!user) {
     redirect(`/login?next=${encodeURIComponent(currentPath)}`);
   }
   const initialEntitlements = await readCurrentUserEntitlementSnapshot();
@@ -36,6 +35,16 @@ export default async function MockCheckoutPage({
       title={sp.title ?? "사주바라 전체 해설"}
     />
   );
+}
+
+async function readCurrentUser() {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase.auth.getUser();
+    return data.user ?? null;
+  } catch {
+    return null;
+  }
 }
 
 function buildCurrentPath(sp: Awaited<SearchParams>): string {

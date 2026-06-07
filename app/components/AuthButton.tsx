@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useI18n } from "./LanguageProvider";
 
 export default function AuthButton() {
+  const { t } = useI18n();
   const [email, setEmail] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
@@ -18,9 +20,14 @@ export default function AuthButton() {
       return;
     }
     const supabase = createSupabaseBrowserClient();
-    supabase.auth.getUser().then(({ data }) => {
-      setEmail(data.user?.email ?? null);
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        setEmail(data.user?.email ?? null);
+      })
+      .catch(() => {
+        setEmail(null);
+      });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setEmail(session?.user.email ?? null);
     });
@@ -35,7 +42,7 @@ export default function AuthButton() {
         className="h-8 px-3 rounded-full bg-sb-paper text-[12px] font-bold text-sb-ink-2 inline-flex items-center gap-1"
         style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
       >
-        로그인
+        {t("auth.signedOut")}
       </span>
     );
   }
@@ -68,7 +75,7 @@ export default function AuthButton() {
       className="h-8 px-3 rounded-full bg-sb-paper text-[12px] font-bold text-sb-ink-2 inline-flex items-center gap-1"
       style={{ boxShadow: "inset 0 0 0 1px var(--sb-hairline)" }}
     >
-      로그인
+      {t("auth.signedOut")}
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
         <path
           d="M3.5 2L6.5 5L3.5 8"
